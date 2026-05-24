@@ -5,6 +5,8 @@ namespace source\Controller;
 class Api
 {
 
+    protected array $response = [];
+
     public function hello()
     {
         echo "Olá, mundo! Estamos com a API funcionando, graças a Deus!";

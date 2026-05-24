@@ -2,9 +2,215 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VORTEX centraliza alunos, treinos e evolucao para personal trainers.">
+    <title>VORTEX | Gestao de treinos para personal trainers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="views/assets/_common/styles/variables.css">
+    <link rel="stylesheet" href="views/assets/_common/styles/global.css">
+    <link rel="stylesheet" href="views/assets/_common/styles/components.css">
+    <link rel="stylesheet" href="views/assets/public/styles/home.css">
 </head>
 <body>
+    <header class="site-header">
+        <nav class="site-nav wrapper" aria-label="Navegacao principal">
+            <a class="brand" href="#inicio" aria-label="VORTEX pagina inicial">
+                <strong>VORTEX</strong>
+            </a>
 
+            <button class="menu-button" type="button" aria-expanded="false" aria-controls="main-menu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span class="sr-only">Abrir menu</span>
+            </button>
+
+            <ul class="nav-links" id="main-menu">
+                <li><a href="#beneficios">Beneficios</a></li>
+                <li><a href="#fluxo">Fluxo</a></li>
+                <li><a href="views/app.html">App</a></li>
+                <li><a href="views/admin.html">Admin</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+
+            <menu class="nav-actions" aria-label="Acoes da conta">
+                <li><a class="button button-secondary" href="views/app.html">Entrar</a></li>
+                <li><a class="button button-primary" href="#cadastro">Comecar agora</a></li>
+            </menu>
+        </nav>
+    </header>
+
+    <main id="inicio">
+        <section class="hero section-band">
+            <article class="hero-copy wrapper">
+                <p class="eyebrow">Gestao de treinos sem planilhas soltas</p>
+                <h1>VORTEX organiza alunos, treinos e evolucao em um painel direto ao ponto.</h1>
+                <p class="hero-text">
+                    Uma interface moderna para personal trainers criarem treinos personalizados,
+                    acompanharem execucoes e manterem cada aluno no ritmo certo.
+                </p>
+                <menu class="hero-actions" aria-label="Acoes principais">
+                    <li><a class="button button-primary button-large" href="#cadastro">Comecar agora</a></li>
+                    <li><a class="button button-ghost button-large" href="views/app.html">Ver painel</a></li>
+                </menu>
+            </article>
+
+            <figure class="product-shot wrapper" aria-label="Previa visual do painel VORTEX">
+                <figcaption>Painel do personal</figcaption>
+                <section class="dashboard-preview" aria-label="Resumo do dashboard">
+                    <aside class="sidebar-preview" aria-label="Menu lateral do aplicativo">
+                        <strong>VTX</strong>
+                        <a href="views/app.html">Dashboard</a>
+                        <a href="#beneficios">Alunos</a>
+                        <a href="#fluxo">Treinos</a>
+                        <a href="#contato">Relatorios</a>
+                    </aside>
+                    <article class="panel-preview">
+                        <header>
+                            <p>Bom treino, Rafael</p>
+                            <strong>24 alunos ativos</strong>
+                        </header>
+                        <section class="metrics-grid" aria-label="Metricas principais">
+                            <article>
+                                <span>Treinos ativos</span>
+                                <strong>38</strong>
+                            </article>
+                            <article>
+                                <span>Execucoes hoje</span>
+                                <strong>17</strong>
+                            </article>
+                            <article>
+                                <span>Alertas</span>
+                                <strong>04</strong>
+                            </article>
+                        </section>
+                        <section class="workout-card" aria-label="Treino em destaque">
+                            <header>
+                                <p>Aluno em foco</p>
+                                <strong>Marina Costa</strong>
+                            </header>
+                            <ol>
+                                <li>Agachamento livre <span>4x10</span></li>
+                                <li>Supino reto <span>3x12</span></li>
+                                <li>Remada baixa <span>4x8</span></li>
+                            </ol>
+                        </section>
+                    </article>
+                </section>
+            </figure>
+        </section>
+
+        <section class="benefits wrapper" id="beneficios" aria-labelledby="benefits-title">
+            <p class="eyebrow">Beneficios</p>
+            <h2 id="benefits-title">Menos retrabalho, mais controle sobre cada evolucao.</h2>
+            <ul class="feature-list">
+                <li>
+                    <article>
+                        <strong>Alunos centralizados</strong>
+                        <p>Perfis, objetivos, restricoes e historico ficam reunidos para consulta rapida.</p>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <strong>Treinos por contexto</strong>
+                        <p>Monte series para academia, casa, futebol, crossfit ou rotina de atleta.</p>
+                    </article>
+                </li>
+                <li>
+                    <article>
+                        <strong>Leitura de progresso</strong>
+                        <p>Cards e relatorios destacam frequencia, carga e pontos que pedem atencao.</p>
+                    </article>
+                </li>
+            </ul>
+        </section>
+
+        <section class="workflow section-band" id="fluxo" aria-labelledby="workflow-title">
+            <article class="wrapper">
+                <p class="eyebrow">Fluxo principal</p>
+                <h2 id="workflow-title">Do cadastro do aluno ao treino atribuido em poucos passos.</h2>
+                <ol class="steps">
+                    <li>
+                        <strong>Cadastre o aluno</strong>
+                        <p>Registre dados essenciais, metas e observacoes sem transformar a tela em planilha.</p>
+                    </li>
+                    <li>
+                        <strong>Escolha exercicios</strong>
+                        <p>Use uma biblioteca visual para compor a serie com cargas, repeticoes e descanso.</p>
+                    </li>
+                    <li>
+                        <strong>Acompanhe a execucao</strong>
+                        <p>Veja alertas, proximos treinos e evolucao para ajustar o plano no momento certo.</p>
+                    </li>
+                </ol>
+            </article>
+        </section>
+
+        <section class="app-preview wrapper" id="app" aria-labelledby="app-title">
+            <article class="app-copy">
+                <p class="eyebrow">Area do personal</p>
+                <h2 id="app-title">Um painel escuro, legivel e feito para trabalhar rapido.</h2>
+                <p>
+                    A estrutura prioriza sidebar no desktop, menu compacto no mobile, listas de alunos
+                    com busca e formularios claros para cadastro e edicao.
+                </p>
+                <menu class="inline-actions" aria-label="Acoes da area do personal">
+                    <li><a class="button button-primary" href="views/app.html">Abrir area app</a></li>
+                    <li><a class="button button-secondary" href="views/admin.html">Abrir admin</a></li>
+                </menu>
+            </article>
+
+            <aside class="student-card" aria-label="Resumo de aluno">
+                <p>Proximo treino</p>
+                <strong>Forca superior</strong>
+                <ul>
+                    <li><span>Duracao</span><b>52 min</b></li>
+                    <li><span>Intensidade</span><b>Alta</b></li>
+                    <li><span>Status</span><b>Pronto</b></li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="signup section-band" id="cadastro" aria-labelledby="signup-title">
+            <article class="wrapper signup-panel">
+                <p class="eyebrow">Comece o teste</p>
+                <h2 id="signup-title">Receba acesso antecipado ao VORTEX.</h2>
+                <form class="lead-form" action="#" method="post">
+                    <label for="name">Nome do personal</label>
+                    <input id="name" name="name" type="text" placeholder="Seu nome" autocomplete="name">
+
+                    <label for="email">E-mail profissional</label>
+                    <input id="email" name="email" type="email" placeholder="voce@email.com" autocomplete="email">
+
+                    <button class="button button-primary" type="submit">Quero testar</button>
+                    <output class="form-status" role="status" aria-live="polite"></output>
+                </form>
+            </article>
+        </section>
+    </main>
+
+    <footer class="site-footer" id="contato">
+        <section class="wrapper footer-grid">
+            <article>
+                <strong>VORTEX</strong>
+                <p>Gestao moderna de treinos para personal trainers.</p>
+            </article>
+            <nav aria-label="Links do rodape">
+                <a href="#beneficios">Beneficios</a>
+                <a href="views/app.html">Login</a>
+                <a href="views/admin.html">Admin</a>
+                <a href="#cadastro">Cadastro</a>
+            </nav>
+            <address>
+                contato@vortex.fit<br>
+                Atendimento para personais no Brasil
+            </address>
+        </section>
+    </footer>
+
+    <script src="views/assets/_common/scripts/menuMobile.js"></script>
+    <script src="views/assets/public/scripts/home.js"></script>
 </body>
 </html>

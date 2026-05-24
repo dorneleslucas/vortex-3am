@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Painel administrativo VORTEX para gerenciar personais, planos e logs.">
+    <title>VORTEX | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/_common/styles/variables.css">
+    <link rel="stylesheet" href="assets/_common/styles/global.css">
+    <link rel="stylesheet" href="assets/_common/styles/components.css">
+    <link rel="stylesheet" href="assets/admin/styles/admin-painel.css">
+</head>
+<body class="admin-body">
+    <aside class="admin-sidebar" aria-label="Navegacao administrativa">
+        <a class="brand" href="../index.html" aria-label="Voltar para home VORTEX">
+            <strong>VORTEX</strong>
+        </a>
+        <nav>
+            <a class="is-active" href="#painel">Painel</a>
+            <a href="#personais">Personais</a>
+            <a href="#planos">Planos</a>
+            <a href="#logs">Logs</a>
+            <a href="#configuracoes">Configuracoes</a>
+        </nav>
+    </aside>
+
+    <main class="admin-main" id="painel">
+        <header class="admin-topbar">
+            <button class="panel-menu-button" type="button" aria-expanded="false" aria-controls="admin-navigation">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span class="sr-only">Abrir menu administrativo</span>
+            </button>
+            <section>
+                <p class="eyebrow">Administracao</p>
+                <h1>Painel do sistema</h1>
+            </section>
+            <a class="button button-secondary" href="../index.html">Sair</a>
+        </header>
+
+        <nav class="mobile-panel-nav" id="admin-navigation" aria-label="Menu mobile administrativo">
+            <a href="#painel">Painel</a>
+            <a href="#personais">Personais</a>
+            <a href="#planos">Planos</a>
+            <a href="#logs">Logs</a>
+            <a href="#configuracoes">Configuracoes</a>
+        </nav>
+
+        <section class="admin-metrics" aria-label="Metricas administrativas">
+            <article>
+                <span>Personais ativos</span>
+                <strong>128</strong>
+                <p>+14 no mes</p>
+            </article>
+            <article>
+                <span>Cadastros pendentes</span>
+                <strong>09</strong>
+                <p>Aguardando aprovacao</p>
+            </article>
+            <article>
+                <span>Planos pagos</span>
+                <strong>84%</strong>
+                <p>Base total ativa</p>
+            </article>
+            <article>
+                <span>Logs criticos</span>
+                <strong>02</strong>
+                <p>Revisar hoje</p>
+            </article>
+        </section>
+
+        <section class="admin-grid">
+            <article class="management-panel" id="personais" aria-labelledby="personals-title">
+                <header class="panel-heading">
+                    <section>
+                        <p class="eyebrow">Gestao</p>
+                        <h2 id="personals-title">Personais cadastrados</h2>
+                    </section>
+                    <label>
+                        <span class="sr-only">Filtrar personal</span>
+                        <input class="admin-search" type="search" placeholder="Filtrar personal">
+                    </label>
+                </header>
+
+                <ul class="personal-list">
+                    <li>
+                        <article>
+                            <strong>Rafael Mendes</strong>
+                            <p>Plano Pro · 24 alunos</p>
+                            <menu>
+                                <li><button class="button button-secondary" type="button">Editar</button></li>
+                                <li><button class="button button-primary" type="button">Aprovar</button></li>
+                            </menu>
+                        </article>
+                    </li>
+                    <li>
+                        <article>
+                            <strong>Carla Nunes</strong>
+                            <p>Plano Starter · 8 alunos</p>
+                            <menu>
+                                <li><button class="button button-secondary" type="button">Editar</button></li>
+                                <li><button class="button button-primary" type="button">Ativar</button></li>
+                            </menu>
+                        </article>
+                    </li>
+                    <li>
+                        <article>
+                            <strong>Diego Rocha</strong>
+                            <p>Cadastro pendente · 0 alunos</p>
+                            <menu>
+                                <li><button class="button button-secondary" type="button">Revisar</button></li>
+                                <li><button class="button button-primary" type="button">Aprovar</button></li>
+                            </menu>
+                        </article>
+                    </li>
+                </ul>
+            </article>
+
+            <aside class="plans-panel" id="planos" aria-labelledby="plans-title">
+                <p class="eyebrow">Planos</p>
+                <h2 id="plans-title">Limites atuais</h2>
+                <ul>
+                    <li><strong>Starter</strong><span>10 alunos</span></li>
+                    <li><strong>Pro</strong><span>50 alunos</span></li>
+                    <li><strong>Studio</strong><span>200 alunos</span></li>
+                </ul>
+            </aside>
+        </section>
+
+        <section class="admin-grid">
+            <article class="logs-panel" id="logs" aria-labelledby="logs-title">
+                <p class="eyebrow">Logs</p>
+                <h2 id="logs-title">Acessos recentes</h2>
+                <ol>
+                    <li><strong>Login admin</strong><span>Hoje, 09:20</span></li>
+                    <li><strong>Plano alterado</strong><span>Ontem, 17:42</span></li>
+                    <li><strong>Cadastro aprovado</strong><span>Ontem, 14:08</span></li>
+                </ol>
+            </article>
+
+            <article class="settings-panel" id="configuracoes" aria-labelledby="settings-title">
+                <p class="eyebrow">Configuracoes</p>
+                <h2 id="settings-title">Regras globais</h2>
+                <form class="admin-form" action="#" method="post">
+                    <label for="student-limit">Limite padrao de alunos</label>
+                    <input id="student-limit" name="student-limit" type="number" value="50" min="1">
+                    <label for="trial-days">Dias de teste</label>
+                    <input id="trial-days" name="trial-days" type="number" value="14" min="1">
+                    <button class="button button-primary" type="submit">Salvar ajustes</button>
+                    <output class="admin-status" role="status" aria-live="polite"></output>
+                </form>
+            </article>
+        </section>
+    </main>
+
+    <script src="assets/admin/scripts/gestao-personais.js"></script>
+</body>
+</html>

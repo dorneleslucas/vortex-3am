@@ -4,7 +4,7 @@
 
 Todos os endpoints deste sistema devem seguir o padrão de resposta JSON abaixo:
 
-| Código | `type`    | `status`               | Significado                                                    |
+| Código | `type`    | `status`               |   Significado                                                    |
 |--------|-----------|------------------------|----------------------------------------------------------------|
 | 200    | `success` | `success`              | Requisição bem-sucedida, com ou sem dados de retorno.          |
 | 201    | `success` | `created`              | Recurso criado com sucesso (usado em POST).                    |

@@ -1,6 +1,6 @@
 <?php
 
-namespace source\Models;
+namespace source\Models\Product;
 
 use Source\Core\Connect;
 
@@ -59,7 +59,7 @@ class Product
         $this->price = $price;
     }
 
-    public function listAll (): array
+    public function listAll(): array
     {
         $query = "SELECT products.id, products.name, products.price, 
 	                     products_categories.name as 'category_name' 
@@ -69,31 +69,54 @@ class Product
         return $stmt->fetchAll();
     }
 
-    public function listById (int $id): object | bool
+    public function productById(int $id): object|bool
     {
         $query = "SELECT * FROM products WHERE id = :id";
         $stmt = Connect::getInstance()->prepare($query);
         $stmt->bindParam(":id", $id);
         $stmt->execute();
-        if($stmt->rowCount() > 0){
+        if ($stmt->rowCount() > 0) {
             return $stmt->fetch();
         }
         return false;
     }
-
-    public function insert (): bool
+    public function create(): bool
     {
-        $query = "INSERT INTO products VALUES (NULL, :categoryId, :name, :price)";
+        $query = "INSERT INTO products VALUES(NULL, :categoryId, :name, :price)";
         $stmt = Connect::getInstance()->prepare($query);
         $stmt->bindParam(":categoryId", $this->categoryId);
         $stmt->bindParam(":name", $this->name);
         $stmt->bindParam(":price", $this->price);
         $stmt->execute();
-        if($stmt->rowCount() == 1){
+
+        if ($stmt->rowCount() === 1) {
             $this->id = Connect::getInstance()->lastInsertId();
             return true;
         }
+
         return false;
     }
+    public function softDelete(int $id): bool
+    {
+        $query = "UPDATE products SET active = 0 WHERE id = :id";
+        $stmt = Connect::getInstance()->prepare($query);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
 
+        return $stmt->rowCount() > 0;
+    }
+    public function update(): bool
+    {
+        $query = "UPDATE products 
+              SET category_id = :categoryId, name = :name, price = :price 
+              WHERE id = :id";
+
+        $stmt = Connect::getInstance()->prepare($query);
+        $stmt->bindParam(":categoryId", $this->categoryId);
+        $stmt->bindParam(":name", $this->name);
+        $stmt->bindParam(":price", $this->price);
+        $stmt->bindParam(":id", $this->id);
+
+        return $stmt->execute();
+    }
 }

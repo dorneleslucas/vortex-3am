@@ -26,16 +26,31 @@ $route = new Router(url("api"),":");
 $route->namespace("Source\Controller");
 
 // Início - Exercícios - Desafios
-$route->get("/products/list", "Products:productsList");
-$route->get("/products/list/{productId}","Products:productsListById");
-$route->post("/products","Products:create");
+$route->get("/products/list", "Products\\Products:productsList");
+$route->get("/products/list/{productId}", "Products\\Products:productById");
+$route->post("/products", "Products\\Products:create");
+$route->put("/products/{product_id}", "Products\\Products:update");
+$route->delete("/products/{product_id}", "Products\\Products:softDelete");
 
-$route->get("/products-categories/list", "ProductsCategories:productsCategoryList");
+$route->get("/products-categories/list/{categoryId}", "Products\\ProductsCategories:categoryFindById");
+$route->get("/products-categories/list", "Products\\ProductsCategories:productsCategoryList");
+$route->post("/products_categories", "Products\\ProductsCategories:create");
+
+$route->get("/faqs_categories/list", "Faqs\\FaqsCategories:listAll");
+$route->get("/faqs_categories/list/{faq_categorieId}", "Faqs\\FaqsCategories:listById");
+$route->post("/faqs_categories", "Faqs\\FaqsCategories:create");
+$route->put("/faqs_categories/{faq_category_id}", "Faqs\\FaqsCategories:update");
+$route->delete("/faqs_categories/{faq_category_id}", "Faqs\\FaqsCategories:softDelete");
+
+$route->get("/faqs/list", "Faqs\\Faqs:listAll");
+$route->get("/faqs/list/{faq_id}", "Faqs\\Faqs:listById");
+$route->post("/faqs", "Faqs\\Faqs:create");
+$route->put("/faqs/{faq_id}", "Faqs\\Faqs:update");
+$route->delete("/faqs/{faq_id}", "Faqs\\Faqs:softDelete");
 // Fim - Exercícios - Desafios
 
 $route->get("/hello", "Api:hello");
 $route->get("/users/list", "Users:usersList");
-
 $route->dispatch();
 
 /** ERROR REDIRECT */

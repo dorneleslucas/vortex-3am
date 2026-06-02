@@ -44,7 +44,7 @@ class FaqCategorie
     }
     public function listById(int $id): object|bool
     {
-        $query = "SELECT * FROM products WHERE id = :id";
+        $query = "SELECT * FROM faqs_categories WHERE id = :id";
         $stmt = Connect::getInstance()->prepare($query);
         $stmt->bindParam(":id", $id);
         $stmt->execute();

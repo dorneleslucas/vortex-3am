@@ -50,6 +50,7 @@ class Faqs extends Api
     }
 public function create(array $data): void
 {
+
     if (
         !isset($data["question"]) || empty($data["question"]) ||
         !isset($data["answer"]) || empty($data["answer"]) ||

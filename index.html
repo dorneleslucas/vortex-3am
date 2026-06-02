@@ -13,10 +13,17 @@
     <link rel="stylesheet" href="views/assets/_common/styles/components.css">
     <link rel="stylesheet" href="views/assets/public/styles/home.css">
 </head>
-<body>
+<body class="custom-cursor">
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
     <header class="site-header">
         <nav class="site-nav wrapper" aria-label="Navegacao principal">
             <a class="brand" href="#inicio" aria-label="VORTEX pagina inicial">
+                <span class="brand-mark" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
                 <strong>VORTEX</strong>
             </a>
 
@@ -44,20 +51,43 @@
 
     <main id="inicio">
         <section class="hero section-band">
-            <article class="hero-copy wrapper">
-                <p class="eyebrow">Gestao de treinos sem planilhas soltas</p>
-                <h1>VORTEX organiza alunos, treinos e evolucao em um painel direto ao ponto.</h1>
-                <p class="hero-text">
-                    Uma interface moderna para personal trainers criarem treinos personalizados,
-                    acompanharem execucoes e manterem cada aluno no ritmo certo.
-                </p>
-                <menu class="hero-actions" aria-label="Acoes principais">
-                    <li><a class="button button-primary button-large" href="#cadastro">Comecar agora</a></li>
-                    <li><a class="button button-ghost button-large" href="views/app.html">Ver painel</a></li>
-                </menu>
+            <article class="hero-layout wrapper reveal">
+                <div class="hero-copy">
+                    <p class="eyebrow">Gestao de treinos sem planilhas soltas</p>
+                    <h1>VORTEX organiza alunos, treinos e evolucao em um painel direto ao ponto.</h1>
+                    <p class="hero-text">
+                        Uma interface moderna para personal trainers criarem treinos personalizados,
+                        acompanharem execucoes e manterem cada aluno no ritmo certo.
+                    </p>
+                    <menu class="hero-actions" aria-label="Acoes principais">
+                        <li><a class="button button-primary button-large" href="#cadastro">Comecar agora</a></li>
+                        <li><a class="button button-ghost button-large" href="views/app.html">Ver painel</a></li>
+                    </menu>
+                </div>
+
+                <aside class="hero-lift-card" aria-label="Resumo de treino em andamento">
+                    <div class="lift-icon" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <p>Treino ativo</p>
+                    <strong>Forca + Hipertrofia</strong>
+                    <ul>
+                        <li><span>Carga total</span><b>7.840 kg</b></li>
+                        <li><span>Conclusao</span><b>82%</b></li>
+                        <li><span>Ritmo</span><b>Alto</b></li>
+                    </ul>
+                </aside>
             </article>
 
-            <figure class="product-shot wrapper" aria-label="Previa visual do painel VORTEX">
+            <ul class="hero-stats wrapper reveal" aria-label="Indicadores do VORTEX">
+                <li><strong>38</strong><span>treinos ativos</span></li>
+                <li><strong>24</strong><span>alunos em acompanhamento</span></li>
+                <li><strong>17</strong><span>execucoes registradas hoje</span></li>
+            </ul>
+
+            <figure class="product-shot wrapper reveal" aria-label="Previa visual do painel VORTEX">
                 <figcaption>Painel do personal</figcaption>
                 <section class="dashboard-preview" aria-label="Resumo do dashboard">
                     <aside class="sidebar-preview" aria-label="Menu lateral do aplicativo">
@@ -102,7 +132,7 @@
             </figure>
         </section>
 
-        <section class="benefits wrapper" id="beneficios" aria-labelledby="benefits-title">
+        <section class="benefits wrapper reveal" id="beneficios" aria-labelledby="benefits-title">
             <p class="eyebrow">Beneficios</p>
             <h2 id="benefits-title">Menos retrabalho, mais controle sobre cada evolucao.</h2>
             <ul class="feature-list">
@@ -128,7 +158,7 @@
         </section>
 
         <section class="workflow section-band" id="fluxo" aria-labelledby="workflow-title">
-            <article class="wrapper">
+            <article class="wrapper reveal">
                 <p class="eyebrow">Fluxo principal</p>
                 <h2 id="workflow-title">Do cadastro do aluno ao treino atribuido em poucos passos.</h2>
                 <ol class="steps">
@@ -148,7 +178,7 @@
             </article>
         </section>
 
-        <section class="app-preview wrapper" id="app" aria-labelledby="app-title">
+        <section class="app-preview wrapper reveal" id="app" aria-labelledby="app-title">
             <article class="app-copy">
                 <p class="eyebrow">Area do personal</p>
                 <h2 id="app-title">Um painel escuro, legivel e feito para trabalhar rapido.</h2>
@@ -174,7 +204,7 @@
         </section>
 
         <section class="signup section-band" id="cadastro" aria-labelledby="signup-title">
-            <article class="wrapper signup-panel">
+            <article class="wrapper signup-panel reveal">
                 <p class="eyebrow">Comece o teste</p>
                 <h2 id="signup-title">Receba acesso antecipado ao VORTEX.</h2>
                 <form class="lead-form" action="#" method="post">

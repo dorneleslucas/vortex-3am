@@ -26,11 +26,14 @@ $route = new Router(url("api"),":");
 $route->namespace("Source\Controller");
 
 // Início - Exercícios - Desafios
+$route->group("/products"); 
+$route->get("/list/{products_id}" , "Products:listById"); 
 $route->get("/products/list", "Products\\Products:productsList");
 $route->get("/products/list/{productId}", "Products\\Products:productById");
 $route->post("/products", "Products\\Products:create");
 $route->put("/products/{product_id}", "Products\\Products:update");
 $route->delete("/products/{product_id}", "Products\\Products:softDelete");
+$route->group(null); 
 
 $route->get("/products-categories/list/{categoryId}", "Products\\ProductsCategories:categoryFindById");
 $route->get("/products-categories/list", "Products\\ProductsCategories:productsCategoryList");

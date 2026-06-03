@@ -1,413 +1,302 @@
 # Banco de Dados - VORTEX
 
-Este documento descreve o que o banco de dados do VORTEX deve armazenar com base nas telas em `views/`.
+Resumo simples do banco de dados do VORTEX, uma plataforma para personal trainers gerenciarem alunos, treinos, exercicios, progresso, assinaturas e administracao.
 
-O sistema e uma plataforma para personal trainers gerenciarem alunos, treinos, biblioteca de exercicios, execucoes, progresso, planos de assinatura e administracao geral.
+## Padroes
 
-## Visao geral do banco
+- Banco: MySQL.
+- Tabelas no plural e em `snake_case`.
+- Toda tabela principal deve ter `id`.
+- Tabelas operacionais devem ter `created_at` e `updated_at`.
+- Usar `deleted_at` quando precisar de exclusao logica.
+- Senhas devem ser salvas com hash em `password_hash`.
 
-O banco deve permitir:
-
-- cadastrar visitantes interessados em testar a plataforma;
-- autenticar usuarios do sistema;
-- separar usuarios administradores, personais e alunos;
-- controlar personais cadastrados, aprovados, ativos ou pendentes;
-- controlar planos como Starter, Pro e Studio;
-- limitar a quantidade de alunos por plano;
-- cadastrar alunos vinculados a um personal;
-- registrar objetivos, restricoes e observacoes dos alunos;
-- montar treinos personalizados;
-- manter uma biblioteca de exercicios;
-- registrar series, repeticoes, descanso, carga e duracao dos exercicios;
-- acompanhar execucoes de treinos;
-- gerar metricas do dashboard, como total de alunos, treinos ativos, execucoes do dia e alertas;
-- registrar progresso semanal, conclusao de treinos e carga total;
-- armazenar alertas solicitando ajustes;
-- registrar logs administrativos e acessos recentes;
-- salvar configuracoes globais do sistema, como limite padrao de alunos e dias de teste.
-
-## Padroes recomendados
-
-- Usar MySQL.
-- Usar nomes de tabelas no plural e em `snake_case`.
-- Toda tabela principal deve ter um campo `id` inteiro, chave primaria e auto incremento.
-- Toda tabela operacional deve ter `created_at`, `updated_at` e, quando necessario, `deleted_at` para exclusao logica.
-- Campos de status devem usar valores previsiveis, por exemplo: `pending`, `active`, `inactive`, `blocked`, `approved`, `rejected`, `completed`, `cancelled`.
-- Senhas nunca devem ser salvas em texto puro. Usar hash seguro no campo `password_hash`.
-
-## Tabelas
+## Tabelas principais
 
 ### user_types
 
-Define os tipos de usuarios do sistema.
+Tipos de usuario do sistema.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do tipo.
-- `name`: nome do tipo de usuario. Exemplos: `ADMIN`, `PERSONAL`, `STUDENT`.
-- `description`: descricao do que esse tipo pode acessar.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-
-Relacionamentos:
-
-- Um tipo de usuario pode estar associado a muitos registros em `users`.
+- `id`
+- `name`: `ADMIN`, `PERSONAL` ou `STUDENT`
+- `description`
+- `created_at`
+- `updated_at`
 
 ### users
 
-Armazena os dados basicos de acesso ao sistema.
+Usuarios que acessam o sistema.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do usuario.
-- `user_type_id`: referencia para `user_types`.
-- `name`: nome completo.
-- `email`: e-mail usado para login.
-- `password_hash`: senha criptografada.
-- `phone`: telefone ou WhatsApp.
-- `status`: situacao do usuario, como `pending`, `active`, `inactive` ou `blocked`.
-- `last_login_at`: data do ultimo login.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-- `deleted_at`: data de exclusao logica.
-
-Relacionamentos:
-
-- Um usuario pode ser administrador, personal ou aluno.
-- Um usuario do tipo personal deve ter um perfil em `personal_profiles`.
-- Um usuario do tipo aluno pode ter um perfil em `students`.
+- `id`
+- `user_type_id`
+- `name`
+- `email`
+- `password_hash`
+- `phone`
+- `status`: `pending`, `active`, `inactive` ou `blocked`
+- `last_login_at`
+- `created_at`
+- `updated_at`
+- `deleted_at`
 
 ### personal_profiles
 
-Guarda informacoes especificas dos personal trainers.
+Dados especificos dos personais.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do perfil do personal.
-- `user_id`: referencia para o usuario do personal.
-- `plan_id`: plano atual do personal.
-- `display_name`: nome exibido nas telas.
-- `bio`: breve descricao profissional.
-- `document`: CPF ou documento de cadastro, se necessario.
-- `specialty`: especialidade principal, como hipertrofia, mobilidade, corrida ou futebol.
-- `approval_status`: status do cadastro, como `pending`, `approved` ou `rejected`.
-- `approved_at`: data de aprovacao.
-- `approved_by`: administrador que aprovou o cadastro.
-- `student_limit`: limite individual de alunos, quando diferente do plano.
-- `trial_ends_at`: data de fim do periodo de teste.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-- `deleted_at`: data de exclusao logica.
-
-Relacionamentos:
-
-- Cada personal pertence a um usuario.
-- Cada personal pode ter muitos alunos.
-- Cada personal pode criar muitos treinos.
-- Cada personal pode estar ligado a um plano.
+- `id`
+- `user_id`
+- `plan_id`
+- `display_name`
+- `bio`
+- `document`
+- `specialty`
+- `approval_status`: `pending`, `approved` ou `rejected`
+- `approved_at`
+- `approved_by`
+- `student_limit`
+- `trial_ends_at`
+- `created_at`
+- `updated_at`
+- `deleted_at`
 
 ### plans
 
-Representa os planos mostrados no painel administrativo, como Starter, Pro e Studio.
+Planos da plataforma.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do plano.
-- `name`: nome do plano. Exemplos: Starter, Pro, Studio.
-- `description`: descricao curta do plano.
-- `student_limit`: quantidade maxima de alunos permitida.
-- `price`: valor mensal do plano.
-- `billing_period`: periodo de cobranca, como `monthly` ou `yearly`.
-- `is_active`: indica se o plano esta disponivel.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-- `deleted_at`: data de exclusao logica.
-
-Relacionamentos:
-
-- Um plano pode estar associado a muitos personais.
-- Um plano pode ter muitas assinaturas em `subscriptions`.
+- `id`
+- `name`: Starter, Pro ou Studio
+- `description`
+- `student_limit`
+- `price`
+- `billing_period`: `monthly` ou `yearly`
+- `is_active`
+- `created_at`
+- `updated_at`
+- `deleted_at`
 
 ### subscriptions
 
-Controla a assinatura atual e o historico financeiro do personal.
+Assinaturas dos personais.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador da assinatura.
-- `personal_id`: referencia para `personal_profiles`.
-- `plan_id`: referencia para `plans`.
-- `status`: status da assinatura, como `trial`, `active`, `overdue`, `cancelled` ou `expired`.
-- `starts_at`: inicio da assinatura.
-- `ends_at`: fim da assinatura.
-- `trial_ends_at`: fim do periodo de teste.
-- `paid_at`: data do ultimo pagamento confirmado.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-
-Relacionamentos:
-
-- Uma assinatura pertence a um personal.
-- Uma assinatura pertence a um plano.
-- Essa tabela ajuda a calcular metricas como "Planos pagos".
+- `id`
+- `personal_id`
+- `plan_id`
+- `status`: `trial`, `active`, `overdue`, `cancelled` ou `expired`
+- `starts_at`
+- `ends_at`
+- `trial_ends_at`
+- `paid_at`
+- `created_at`
+- `updated_at`
 
 ### leads
 
-Armazena os cadastros feitos na pagina publica em "Receba acesso antecipado".
+Interessados que preencheram o formulario publico.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do lead.
-- `name`: nome do personal informado no formulario.
-- `email`: e-mail profissional informado.
-- `status`: andamento do contato, como `new`, `contacted`, `converted` ou `discarded`.
-- `source`: origem do lead, por exemplo `home_signup`.
-- `notes`: observacoes internas.
-- `created_at`: data de envio do formulario.
-- `updated_at`: data da ultima atualizacao.
-
-Relacionamentos:
-
-- Um lead pode virar um usuario e um perfil de personal depois do cadastro completo.
+- `id`
+- `name`
+- `email`
+- `status`: `new`, `contacted`, `converted` ou `discarded`
+- `source`
+- `notes`
+- `created_at`
+- `updated_at`
 
 ### students
 
-Armazena os alunos acompanhados por cada personal.
+Alunos vinculados a um personal.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do aluno.
-- `personal_id`: referencia para o personal responsavel.
-- `user_id`: referencia opcional para `users`, caso o aluno tenha login proprio.
-- `name`: nome completo do aluno.
-- `email`: e-mail do aluno.
-- `phone`: telefone ou WhatsApp.
-- `goal`: objetivo principal, como hipertrofia, futebol, mobilidade ou resistencia.
-- `training_context`: contexto do treino, como academia, casa, crossfit ou esporte.
-- `restrictions`: restricoes, lesoes ou cuidados importantes.
-- `notes`: observacoes do personal.
-- `status`: situacao do aluno, como `active`, `inactive` ou `archived`.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-- `deleted_at`: data de exclusao logica.
-
-Relacionamentos:
-
-- Um aluno pertence a um personal.
-- Um aluno pode receber muitos treinos.
-- Um aluno pode ter muitas execucoes e registros de progresso.
+- `id`
+- `personal_id`
+- `user_id`
+- `name`
+- `email`
+- `phone`
+- `goal`
+- `training_context`
+- `restrictions`
+- `notes`
+- `status`: `active`, `inactive` ou `archived`
+- `created_at`
+- `updated_at`
+- `deleted_at`
 
 ### exercises
 
-Biblioteca de exercicios usada no editor de treinos e na area "Biblioteca".
+Biblioteca de exercicios.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do exercicio.
-- `personal_id`: referencia opcional para o personal dono do exercicio. Se vazio, pode ser exercicio global.
-- `name`: nome do exercicio, como Agachamento livre ou Supino reto.
-- `category`: categoria, como forca, condicionamento, pernas, mobilidade ou superior.
-- `muscle_group`: grupo muscular principal.
-- `equipment`: equipamento necessario.
-- `description`: instrucoes de execucao.
-- `is_global`: indica se o exercicio aparece para todos os personais.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-- `deleted_at`: data de exclusao logica.
-
-Relacionamentos:
-
-- Um exercicio pode aparecer em muitos treinos.
-- Um personal pode criar exercicios proprios.
+- `id`
+- `personal_id`
+- `name`
+- `category`
+- `muscle_group`
+- `equipment`
+- `description`
+- `is_global`
+- `created_at`
+- `updated_at`
+- `deleted_at`
 
 ### workouts
 
-Representa um treino criado pelo personal.
+Treinos criados pelo personal.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do treino.
-- `personal_id`: referencia para o personal que criou o treino.
-- `student_id`: referencia opcional para o aluno dono do treino.
-- `name`: nome do treino, como Treino de Marina, Forca superior ou treino A/B.
-- `goal`: objetivo do treino.
-- `context`: contexto do treino, como academia, casa, futebol ou crossfit.
-- `status`: situacao do treino, como `draft`, `active`, `expired` ou `archived`.
-- `starts_at`: data de inicio.
-- `expires_at`: data de vencimento.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-- `deleted_at`: data de exclusao logica.
-
-Relacionamentos:
-
-- Um treino pertence a um personal.
-- Um treino pode estar vinculado a um aluno.
-- Um treino possui varios exercicios em `workout_exercises`.
-- Um treino pode gerar varias execucoes em `workout_sessions`.
+- `id`
+- `personal_id`
+- `student_id`
+- `name`
+- `goal`
+- `context`
+- `status`: `draft`, `active`, `expired` ou `archived`
+- `starts_at`
+- `expires_at`
+- `created_at`
+- `updated_at`
+- `deleted_at`
 
 ### workout_exercises
 
-Tabela intermediaria que guarda os exercicios dentro de cada treino.
+Exercicios dentro de um treino.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do item do treino.
-- `workout_id`: referencia para `workouts`.
-- `exercise_id`: referencia para `exercises`.
-- `order_index`: ordem do exercicio no treino.
-- `sets`: quantidade de series.
-- `repetitions`: quantidade de repeticoes, quando aplicavel.
-- `duration_seconds`: duracao do exercicio, quando for por tempo.
-- `rest_seconds`: tempo de descanso.
-- `load_kg`: carga planejada em quilos.
-- `notes`: observacoes especificas para o aluno.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-
-Relacionamentos:
-
-- Um item pertence a um treino.
-- Um item referencia um exercicio da biblioteca.
+- `id`
+- `workout_id`
+- `exercise_id`
+- `order_index`
+- `sets`
+- `repetitions`
+- `duration_seconds`
+- `rest_seconds`
+- `load_kg`
+- `notes`
+- `created_at`
+- `updated_at`
 
 ### workout_sessions
 
-Registra cada execucao de treino feita ou planejada para um aluno.
+Execucoes de treino feitas ou planejadas.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador da execucao.
-- `workout_id`: referencia para o treino executado.
-- `student_id`: referencia para o aluno.
-- `scheduled_at`: data e horario planejados, como "Hoje, 18:30".
-- `started_at`: inicio real da execucao.
-- `finished_at`: fim real da execucao.
-- `completion_percentage`: percentual de conclusao.
-- `total_load_kg`: carga total registrada na execucao.
-- `status`: status, como `scheduled`, `in_progress`, `completed`, `missed` ou `cancelled`.
-- `student_feedback`: comentario do aluno.
-- `personal_notes`: anotacoes do personal.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-
-Relacionamentos:
-
-- Uma execucao pertence a um treino.
-- Uma execucao pertence a um aluno.
-- Uma execucao pode ter detalhes por exercicio em `workout_session_exercises`.
+- `id`
+- `workout_id`
+- `student_id`
+- `scheduled_at`
+- `started_at`
+- `finished_at`
+- `completion_percentage`
+- `total_load_kg`
+- `status`: `scheduled`, `in_progress`, `completed`, `missed` ou `cancelled`
+- `student_feedback`
+- `personal_notes`
+- `created_at`
+- `updated_at`
 
 ### workout_session_exercises
 
-Guarda o resultado real de cada exercicio executado em uma sessao de treino.
+Resultado real de cada exercicio executado.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do registro.
-- `workout_session_id`: referencia para `workout_sessions`.
-- `workout_exercise_id`: referencia para o exercicio planejado no treino.
-- `sets_done`: series realizadas.
-- `repetitions_done`: repeticoes realizadas.
-- `duration_done_seconds`: tempo realizado.
-- `load_done_kg`: carga usada.
-- `rest_done_seconds`: descanso real.
-- `is_completed`: indica se o exercicio foi concluido.
-- `notes`: observacoes sobre a execucao.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-
-Relacionamentos:
-
-- Um registro pertence a uma execucao de treino.
-- Um registro aponta para um exercicio planejado.
+- `id`
+- `workout_session_id`
+- `workout_exercise_id`
+- `sets_done`
+- `repetitions_done`
+- `duration_done_seconds`
+- `load_done_kg`
+- `rest_done_seconds`
+- `is_completed`
+- `notes`
+- `created_at`
+- `updated_at`
 
 ### progress_records
 
-Armazena indicadores de evolucao usados nos relatorios.
+Indicadores de evolucao dos alunos.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do registro.
-- `student_id`: referencia para o aluno.
-- `personal_id`: referencia para o personal.
-- `reference_date`: data de referencia.
-- `period_type`: tipo de periodo, como `daily`, `weekly` ou `monthly`.
-- `completion_percentage`: percentual de treinos concluidos.
-- `total_workouts`: quantidade de treinos planejados.
-- `completed_workouts`: quantidade de treinos concluidos.
-- `total_load_kg`: carga total no periodo.
-- `notes`: resumo ou observacao do progresso.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-
-Relacionamentos:
-
-- Um aluno pode ter muitos registros de progresso.
-- Esses dados alimentam relatorios como "Evolucao semanal".
+- `id`
+- `student_id`
+- `personal_id`
+- `reference_date`
+- `period_type`: `daily`, `weekly` ou `monthly`
+- `completion_percentage`
+- `total_workouts`
+- `completed_workouts`
+- `total_load_kg`
+- `notes`
+- `created_at`
+- `updated_at`
 
 ### alerts
 
-Registra alertas do painel, como alunos pedindo ajuste.
+Alertas exibidos no painel.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do alerta.
-- `personal_id`: referencia para o personal.
-- `student_id`: referencia opcional para o aluno relacionado.
-- `workout_id`: referencia opcional para o treino relacionado.
-- `type`: tipo do alerta, como `adjustment_request`, `expiring_workout`, `missed_session` ou `critical_log`.
-- `title`: titulo curto do alerta.
-- `message`: mensagem completa.
-- `status`: status, como `open`, `read`, `resolved` ou `dismissed`.
-- `created_at`: data de criacao.
-- `resolved_at`: data de resolucao.
-
-Relacionamentos:
-
-- Um alerta pertence a um personal.
-- Um alerta pode estar ligado a um aluno ou treino.
-- Essa tabela ajuda a montar a metrica "Alertas".
+- `id`
+- `personal_id`
+- `student_id`
+- `workout_id`
+- `type`
+- `title`
+- `message`
+- `status`: `open`, `read`, `resolved` ou `dismissed`
+- `created_at`
+- `resolved_at`
 
 ### system_settings
 
-Salva configuracoes globais exibidas na area administrativa.
+Configuracoes globais do sistema.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador da configuracao.
-- `setting_key`: chave da configuracao, como `default_student_limit` ou `trial_days`.
-- `setting_value`: valor salvo.
-- `value_type`: tipo do valor, como `number`, `string`, `boolean` ou `json`.
-- `description`: descricao do que a configuracao controla.
-- `updated_by`: administrador que alterou a configuracao.
-- `created_at`: data de criacao.
-- `updated_at`: data da ultima atualizacao.
-
-Relacionamentos:
-
-- Uma configuracao pode ser alterada por um usuario administrador.
-- Exemplos vindos da tela: limite padrao de alunos e dias de teste.
+- `id`
+- `setting_key`
+- `setting_value`
+- `value_type`: `number`, `string`, `boolean` ou `json`
+- `description`
+- `updated_by`
+- `created_at`
+- `updated_at`
 
 ### audit_logs
 
-Registra eventos importantes do sistema e acessos recentes.
+Logs administrativos e acessos importantes.
 
-Campos sugeridos:
+Campos:
 
-- `id`: identificador do log.
-- `user_id`: usuario que realizou a acao.
-- `action`: acao executada, como `admin_login`, `plan_updated` ou `personal_approved`.
-- `entity_type`: tipo de entidade afetada, como `user`, `plan`, `personal` ou `workout`.
-- `entity_id`: id da entidade afetada.
-- `severity`: gravidade, como `info`, `warning` ou `critical`.
-- `ip_address`: IP de origem.
-- `user_agent`: navegador ou cliente usado.
-- `metadata`: dados extras em JSON.
-- `created_at`: data do evento.
-
-Relacionamentos:
-
-- Um log pode estar associado a um usuario.
-- Essa tabela alimenta a area "Logs" do painel administrativo e a metrica "Logs criticos".
+- `id`
+- `user_id`
+- `action`
+- `entity_type`
+- `entity_id`
+- `severity`: `info`, `warning` ou `critical`
+- `ip_address`
+- `user_agent`
+- `metadata`
+- `created_at`
 
 ## Relacionamentos principais
 
@@ -428,52 +317,48 @@ Relacionamentos:
 - `personal_profiles` 1:N `alerts`
 - `users` 1:N `audit_logs`
 
-## Dados iniciais sugeridos
+## Dados iniciais
 
 ### Tipos de usuario
 
-- `ADMIN`: acessa o painel administrativo.
-- `PERSONAL`: acessa a area do personal.
-- `STUDENT`: aluno acompanhado, caso exista login de aluno no futuro.
+- `ADMIN`
+- `PERSONAL`
+- `STUDENT`
 
 ### Planos
 
-- `Starter`: limite de 10 alunos.
-- `Pro`: limite de 50 alunos.
-- `Studio`: limite de 200 alunos.
+- `Starter`: 10 alunos
+- `Pro`: 50 alunos
+- `Studio`: 200 alunos
 
-### Configuracoes globais
+### Configuracoes
 
-- `default_student_limit`: limite padrao de alunos. Valor inicial: `50`.
-- `trial_days`: dias de teste. Valor inicial: `14`.
+- `default_student_limit`: `50`
+- `trial_days`: `14`
 
 ### Exercicios globais
 
-- Agachamento livre - Forca / Pernas.
-- Supino reto - Forca / Superior.
-- Remada baixa - Forca / Costas.
-- Prancha frontal - Core / Mobilidade.
-- Levantamento terra - Forca.
-- Burpee - Condicionamento.
-- Afundo alternado - Pernas.
+- Agachamento livre
+- Supino reto
+- Remada baixa
+- Prancha frontal
+- Levantamento terra
+- Burpee
+- Afundo alternado
 
-## Metricas das telas e origem dos dados
+## Metricas das telas
 
-- "Personais ativos": contar `personal_profiles` aprovados e usuarios ativos.
-- "Cadastros pendentes": contar `personal_profiles` com `approval_status = pending`.
-- "Planos pagos": calcular percentual de `subscriptions` ativas ou pagas.
-- "Logs criticos": contar `audit_logs` com `severity = critical`.
-- "Total de alunos": contar `students` ativos do personal logado.
-- "Treinos ativos": contar `workouts` com `status = active`.
-- "Execucoes hoje": contar `workout_sessions` do dia.
-- "Alertas": contar `alerts` abertos do personal logado.
-- "Evolucao semanal": usar `progress_records` ou calcular a partir de `workout_sessions`.
+- Personais ativos: `personal_profiles` aprovados com usuario ativo.
+- Cadastros pendentes: `personal_profiles.approval_status = pending`.
+- Planos pagos: `subscriptions` ativas ou pagas.
+- Logs criticos: `audit_logs.severity = critical`.
+- Total de alunos: `students` ativos do personal logado.
+- Treinos ativos: `workouts.status = active`.
+- Execucoes hoje: `workout_sessions` do dia.
+- Alertas: `alerts` abertos do personal logado.
+- Evolucao semanal: `progress_records` ou `workout_sessions`.
 
-## Observacoes finais
-
-As tabelas de `products`, `products_categories`, `faqs` e `faqs_categories` aparecem na API como exemplos didaticos, mas nao fazem parte do dominio principal mostrado nas views do VORTEX.
-
-Para implementar o sistema real, a prioridade deve ser criar primeiro:
+## Prioridade de implementacao
 
 1. `user_types`
 2. `users`

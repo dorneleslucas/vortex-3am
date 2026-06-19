@@ -23,41 +23,13 @@ $route = new Router(url("api"), ":");
 $route->namespace("Source\Controller");
 
 $route->get("/hello", "Api:hello");
-$route->get("/users/list", "Users:usersList");
 
-// Produtos
-$route->get("/products/list", "Products\\Products:productsList");
-$route->get("/products/list/{productId}", "Products\\Products:productById");
-$route->post("/products", "Products\\Products:create");
-$route->put("/products/{product_id}", "Products\\Products:update");
-$route->delete("/products/{product_id}", "Products\\Products:softDelete");
-
-// Categorias de produtos
-$route->get("/products-categories/list", "Products\\ProductsCategories:productsCategoryList");
-$route->get("/products-categories/list/{categoryId}", "Products\\ProductsCategories:categoryFindById");
-$route->post("/products-categories", "Products\\ProductsCategories:create");
-$route->get("/products-categories/list", "Products\\ProductsCategories:productsCategoryList");
-$route->get("/products-categories/list/{categoryId}", "Products\\ProductsCategories:categoryFindById");
-$route->post("/products-categories", "Products\\ProductsCategories:create");
-
-// Categorias de FAQ
-$route->get("/faqs-categories/list", "Faqs\\FaqsCategories:listAll");
-$route->get("/faqs-categories/list/{faq_categorieId}", "Faqs\\FaqsCategories:listById");
-$route->post("/faqs-categories", "Faqs\\FaqsCategories:create");
-$route->put("/faqs-categories/{faq_category_id}", "Faqs\\FaqsCategories:update");
-$route->delete("/faqs-categories/{faq_category_id}", "Faqs\\FaqsCategories:softDelete");
-$route->get("/faqs-categories/list", "Faqs\\FaqsCategories:listAll");
-$route->get("/faqs-categories/list/{faq_categorieId}", "Faqs\\FaqsCategories:listById");
-$route->post("/faqs-categories", "Faqs\\FaqsCategories:create");
-$route->put("/faqs-categories/{faq_category_id}", "Faqs\\FaqsCategories:update");
-$route->delete("/faqs-categories/{faq_category_id}", "Faqs\\FaqsCategories:softDelete");
-
-// FAQs
-$route->get("/faqs/list", "Faqs\\Faqs:listAll");
-$route->get("/faqs/list/{faq_id}", "Faqs\\Faqs:listById");
-$route->post("/faqs", "Faqs\\Faqs:create");
-$route->put("/faqs/{faq_id}", "Faqs\\Faqs:update");
-$route->delete("/faqs/{faq_id}", "Faqs\\Faqs:softDelete");
+// CRUD da entidade principal do sistema: treinos.
+$route->post("/treinos", "Treinos:criar");
+$route->get("/treinos", "Treinos:listar");
+$route->get("/treinos/{id}", "Treinos:buscar");
+$route->put("/treinos/{id}", "Treinos:atualizar");
+$route->delete("/treinos/{id}", "Treinos:excluir");
 
 $route->dispatch();
 

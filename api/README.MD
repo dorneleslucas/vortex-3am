@@ -1,90 +1,99 @@
-# 📁 api/
+# API VORTEX
 
-## O Back-End — A API REST em PHP
+Esta pasta contem a API REST do sistema VORTEX, desenvolvido em PHP com MySQL.
 
----
+O VORTEX e um sistema para personal trainers organizarem alunos e treinos. A API nao gera telas HTML; ela recebe requisicoes do front-end e devolve respostas em JSON.
 
-### 🎯 Para que serve esta pasta?
+## Entidade principal
 
-A pasta `api/` contém todo o **código do servidor** (back-end). Aqui é onde o PHP processa as
-requisições vindas do front-end e retorna respostas, geralmente em formato **JSON**.
+A entidade principal do sistema e `treinos`.
 
-Esta pasta funciona como uma **API REST** — ou seja, ela **não gera HTML**. Ela apenas recebe
-requisições e devolve dados, sendo assim, aqui é necessário esquecer que existe `echo` ou `var_dump` — tudo deve ser retornado em JSON.
+Essa escolha faz sentido porque o objetivo central do VORTEX e permitir que o personal trainer cadastre, consulte, edite e exclua treinos de seus alunos. Usuarios, alunos e exercicios existem como apoio para que o treino tenha dono, aluno e conteudo.
 
----
+## Banco de dados
 
-### 📦 O que é uma API REST?
+O script do banco esta em:
 
-**API** (Application Programming Interface) é uma interface que permite a comunicação entre sistemas.
+`../data-base/dump.slq`
 
-**REST** (Representational State Transfer) é um padrão que utiliza os métodos HTTP:
+Nome do banco usado pela API:
 
-| Método HTTP | Ação no banco de dados | Exemplo                    |
-|-------------|------------------------|----------------------------|
-| `GET`       | **Ler** dados          | Buscar lista de usuários   |
-| `POST`      | **Criar** dados        | Cadastrar um novo usuário  |
-| `PUT`       | **Atualizar** dados    | Editar dados de um usuário |
-| `DELETE`    | **Excluir** dados      | Remover um usuário         |
+`vortex_3am`
 
-> 💡 Esses 4 métodos formam o famoso **CRUD** (Create, Read, Update, Delete).
+Tabelas principais:
 
----
+- `usuarios`: guarda administrador e personal trainer.
+- `alunos`: guarda os alunos atendidos pelo personal.
+- `exercicios`: guarda a biblioteca simples de exercicios.
+- `treinos`: entidade principal do sistema.
+- `treino_exercicios`: relaciona exercicios com cada treino.
 
-### 📂 Estrutura desta pasta
+## Rotas da API
 
-```
-api/
-├── .htaccess        ← Configuração do Apache para URLs amigáveis
-├── composer.json    ← Arquivo de configuração do Composer (dependências)
-├── index.php        ← Front Controller — ponto de entrada de TODAS as requisições
-├── vendor/          ← Bibliotecas instaladas pelo Composer (NÃO editar!)
-└── source/          ← Código-fonte da API
-```
+URL base local:
 
----
+`http://localhost/vortex-3am/api`
 
-### 🔑 Arquivos importantes
+### Teste da API
 
-#### `index.php` — Front Controller
-Este é o **ponto de entrada** da API. Toda requisição que chega ao servidor passa por aqui primeiro.
-Ele é responsável por:
-- Carregar o autoload do Composer
-- Iniciar o roteamento (Router)
-- Direcionar a requisição para o Controller correto
+`GET /hello`
 
-#### `.htaccess` — Reescrita de URL
-Este arquivo configura o Apache para redirecionar **todas** as requisições para o `index.php`.
-Por exemplo, ao acessar `api/usuarios`, o Apache reescreve internamente para `api/index.php?route=/usuarios`.
+Retorna uma mensagem simples para verificar se a API esta funcionando.
 
-```apache
-RewriteEngine On
-RewriteCond %{SCRIPT_FILENAME} !-f
-RewriteCond %{SCRIPT_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?route=/$1 [L,QSA]
-```
+### CRUD de treinos
 
-#### `composer.json` — Gerenciador de Dependências
-O Composer é o gerenciador de pacotes do PHP (similar ao `npm` do JavaScript).
-Aqui definimos as dependências do projeto e o **autoload** das classes.
+`GET /treinos`
 
----
+Lista todos os treinos cadastrados.
 
-### 🔗 Relação com o MVC
+`GET /treinos/{id}`
 
-```
-index.php (Front Controller)
-    ↓
-Router (Core/Router.php) → identifica a rota
-    ↓
-Controller (Controller/Api.php) → processa a lógica
-    ↓
-Model (Models/User.php) → acessa o banco de dados
-    ↓
-Resposta JSON → enviada ao front-end
+Busca um treino especifico pelo ID.
+
+`POST /treinos`
+
+Cadastra um novo treino.
+
+Exemplo de corpo JSON:
+
+```json
+{
+  "alunoId": 1,
+  "titulo": "Treino A - Hipertrofia",
+  "objetivo": "Ganho de massa muscular",
+  "observacoes": "Priorizar execucao controlada.",
+  "dataInicio": "2026-06-01",
+  "dataFim": "2026-07-01",
+  "status": "ativo"
+}
 ```
 
----
+`PUT /treinos/{id}`
 
-> 📚 Acesse a pasta `source/` para entender cada camada do MVC em detalhes.
+Atualiza um treino existente.
 
+`DELETE /treinos/{id}`
+
+Exclui um treino existente.
+
+## Formato das respostas
+
+As respostas seguem o formato JSON:
+
+```json
+{
+  "code": 200,
+  "type": "success",
+  "status": "success",
+  "message": "Lista de treinos",
+  "data": []
+}
+```
+
+## Arquivos principais
+
+- `index.php`: registra as rotas da API.
+- `source/Controller/Treinos.php`: controla as requisicoes do CRUD de treinos.
+- `source/Models/Treino.php`: acessa a tabela `treinos` no banco.
+- `source/Core/Connect.php`: cria a conexao PDO com o MySQL.
+- `source/Config/Config.php`: define as configuracoes do projeto e do banco.

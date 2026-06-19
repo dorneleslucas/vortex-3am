@@ -5,7 +5,7 @@ const CONF_URL_TEST = "http://localhost/vortex-3am"; // URL base do site, geralm
 
 
 const CONF_DB_HOST = "localhost";
-const CONF_DB_NAME = "vortex-3am";
+const CONF_DB_NAME = "vortex_3am";
 const CONF_DB_USER= "root";
 const CONF_DB_PORT = 3306;
 const CONF_DB_PASS= "";

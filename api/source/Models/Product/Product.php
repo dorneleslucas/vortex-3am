@@ -1,22 +1,29 @@
 <?php
 
-namespace source\Models\Product;
+namespace Source\Models\Store;
 
+use Source\Core\Model;
 use Source\Core\Connect;
 
-class Product
+class Product extends Model
 {
     private ?int $id;
     private ?int $categoryId;
     private ?string $name;
     private ?float $price;
+    private ?int $active;
 
-    public function __construct(?int $id = null, ?int $categoryId = null, ?string $name = null, ?float $price = null)
+    public function __construct(?int $id = null, ?int $categoryId = null, ?string $name = null, ?float $price = null, ?int $active = 1)
     {
         $this->id = $id;
         $this->categoryId = $categoryId;
         $this->name = $name;
         $this->price = $price;
+        $this->active = $active;
+
+        $this->table = 'products'; // nome da tabela do banco
+        $this->primaryKey = 'id'; // nome da chave primária da tabela
+        $this->fillable = ['categoryId', 'name', 'price', 'active']; // camelCase
     }
 
     public function getId(): ?int
@@ -29,7 +36,7 @@ class Product
         $this->id = $id;
     }
 
-    public function getCategoryId(): int
+    public function getCategoryId(): ?int
     {
         return $this->categoryId;
     }
@@ -39,7 +46,7 @@ class Product
         $this->categoryId = $categoryId;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -49,7 +56,7 @@ class Product
         $this->name = $name;
     }
 
-    public function getPrice(): float
+    public function getPrice(): ?float
     {
         return $this->price;
     }
@@ -59,64 +66,14 @@ class Product
         $this->price = $price;
     }
 
-    public function listAll(): array
+    public function getActive(): ?int
     {
-        $query = "SELECT products.id, products.name, products.price, 
-	                     products_categories.name as 'category_name' 
-                  FROM products
-                  JOIN products_categories ON products.category_id = products_categories.id";
-        $stmt = Connect::getInstance()->query($query);
-        return $stmt->fetchAll();
+        return $this->active;
     }
 
-    public function productById(int $id): object|bool
+    public function setActive(int $active): void
     {
-        $query = "SELECT * FROM products WHERE id = :id";
-        $stmt = Connect::getInstance()->prepare($query);
-        $stmt->bindParam(":id", $id);
-        $stmt->execute();
-        if ($stmt->rowCount() > 0) {
-            return $stmt->fetch();
-        }
-        return false;
+        $this->active = $active;
     }
-    public function create(): bool
-    {
-        $query = "INSERT INTO products VALUES(NULL, :categoryId, :name, :price)";
-        $stmt = Connect::getInstance()->prepare($query);
-        $stmt->bindParam(":categoryId", $this->categoryId);
-        $stmt->bindParam(":name", $this->name);
-        $stmt->bindParam(":price", $this->price);
-        $stmt->execute();
 
-        if ($stmt->rowCount() === 1) {
-            $this->id = Connect::getInstance()->lastInsertId();
-            return true;
-        }
-
-        return false;
-    }
-    public function softDelete(int $id): bool
-    {
-        $query = "UPDATE products SET active = 0 WHERE id = :id";
-        $stmt = Connect::getInstance()->prepare($query);
-        $stmt->bindParam(":id", $id);
-        $stmt->execute();
-
-        return $stmt->rowCount() > 0;
-    }
-    public function update(): bool
-    {
-        $query = "UPDATE products 
-              SET category_id = :categoryId, name = :name, price = :price 
-              WHERE id = :id";
-
-        $stmt = Connect::getInstance()->prepare($query);
-        $stmt->bindParam(":categoryId", $this->categoryId);
-        $stmt->bindParam(":name", $this->name);
-        $stmt->bindParam(":price", $this->price);
-        $stmt->bindParam(":id", $this->id);
-
-        return $stmt->execute();
-    }
 }

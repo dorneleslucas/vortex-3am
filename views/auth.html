@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login e Cadastro no VORTEX - Gestão de treinos">
+    <title>VORTEX | Login e Cadastro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/_common/styles/variables.css">
+    <link rel="stylesheet" href="assets/_common/styles/global.css">
+    <link rel="stylesheet" href="assets/_common/styles/components.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            padding: 20px;
+        }
+        .auth-box {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .auth-header {
+            background: var(--color-dark);
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+        }
+        .auth-header h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .auth-header p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .auth-tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            border: none;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        .auth-tab.active {
+            color: var(--color-primary);
+            border-bottom: 3px solid var(--color-primary);
+            margin-bottom: -2px;
+        }
+        .auth-content {
+            padding: 30px;
+        }
+        .auth-form {
+            display: none;
+        }
+        .auth-form.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-dark);
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+        }
+        .user-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .type-option {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .type-option input[type="radio"] {
+            display: none;
+        }
+        .type-option input[type="radio"]:checked + label {
+            border-bottom: 2px solid var(--color-primary);
+        }
+        .type-option.active {
+            border-color: var(--color-primary);
+            background: rgba(var(--color-primary-rgb), 0.05);
+        }
+        .type-option label {
+            display: block;
+            margin: 0;
+            font-weight: 600;
+            color: var(--color-dark);
+            cursor: pointer;
+        }
+        .auth-button {
+            width: 100%;
+            padding: 12px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .auth-button:hover {
+            background: var(--color-primary-dark);
+        }
+        .auth-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .form-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .form-message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        .form-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        .auth-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .auth-link a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body class="custom-cursor">
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <h1>VORTEX</h1>
+                <p>Gestão de treinos para personal trainers e alunos</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Entrar</button>
+                <button class="auth-tab" data-tab="register">Cadastro</button>
+            </div>
+
+            <div class="auth-content">
+                <!-- FORMULÁRIO DE LOGIN -->
+                <form id="login-form" class="auth-form active">
+                    <div class="form-message" id="login-message"></div>
+
+                    <div class="form-group">
+                        <label for="login-type">Tipo de usuário</label>
+                        <select id="login-type" required>
+                            <option value="">Selecione...</option>
+                            <option value="aluno">Aluno</option>
+                            <option value="personal">Personal Trainer</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-email">E-mail</label>
+                        <input type="email" id="login-email" placeholder="seu@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">Senha</label>
+                        <input type="password" id="login-password" placeholder="Sua senha" required>
+                    </div>
+
+                    <button type="submit" class="auth-button" id="login-btn">Entrar</button>
+                </form>
+
+                <!-- FORMULÁRIO DE CADASTRO -->
+                <form id="register-form" class="auth-form">
+                    <div class="form-message" id="register-message"></div>
+
+                    <div class="form-group">
+                        <label>Tipo de usuário</label>
+                        <div class="user-type-selector">
+                            <div class="type-option active">
+                                <input type="radio" id="type-aluno" name="register-type" value="aluno" checked>
+                                <label for="type-aluno">👤 Aluno</label>
+                            </div>
+                            <div class="type-option">
+                                <input type="radio" id="type-personal" name="register-type" value="personal">
+                                <label for="type-personal">💪 Personal</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-name">Nome completo</label>
+                        <input type="text" id="register-name" placeholder="Seu nome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-email">E-mail</label>
+                        <input type="email" id="register-email" placeholder="seu@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-password">Senha</label>
+                        <input type="password" id="register-password" placeholder="Escolha uma senha forte" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-password-confirm">Confirmar senha</label>
+                        <input type="password" id="register-password-confirm" placeholder="Confirme a senha" required>
+                    </div>
+
+                    <button type="submit" class="auth-button" id="register-btn">Criar conta</button>
+
+                    <div class="auth-link">
+                        Já tem conta? <a href="#" class="switch-to-login">Faça login</a>
+                    </div>
+                </form>
+
+                <div class="back-link">
+                    <a href="../index.html">← Voltar para home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/user-api.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            authManager.autoRedirectIfAuth();
+
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const loginTab = document.querySelector('[data-tab="login"]');
+            const registerTab = document.querySelector('[data-tab="register"]');
+            const typeRadios = document.querySelectorAll('input[name="register-type"]');
+            const typeOptions = document.querySelectorAll('.type-option');
+
+            // Abas
+            loginTab.addEventListener('click', () => switchTab('login'));
+            registerTab.addEventListener('click', () => switchTab('register'));
+
+            function switchTab(tab) {
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+
+                if (tab === 'login') {
+                    loginTab.classList.add('active');
+                    loginForm.classList.add('active');
+                } else {
+                    registerTab.classList.add('active');
+                    registerForm.classList.add('active');
+                }
+            }
+
+            // Seletor de tipo
+            typeRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    typeOptions.forEach(opt => opt.classList.remove('active'));
+                    e.target.closest('.type-option').classList.add('active');
+                });
+            });
+
+            // Link para trocar de login para cadastro
+            document.querySelector('.switch-to-login').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchTab('login');
+            });
+
+            // Login
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const type = document.getElementById('login-type').value;
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const btn = document.getElementById('login-btn');
+                const msg = document.getElementById('login-message');
+
+                if (!type) {
+                    showMessage(msg, 'Selecione um tipo de usuário', 'error');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Entrando...';
+
+                const result = await authManager.login(email, password, type);
+
+                if (result.success) {
+                    showMessage(msg, 'Login realizado com sucesso!', 'success');
+                    setTimeout(() => {
+                        const userType = authManager.getUserType();
+                        window.location.href = userType === 'aluno'
+                            ? '/vortex-3am/views/app.html'
+                            : '/vortex-3am/views/admin.html';
+                    }, 1500);
+                } else {
+                    showMessage(msg, result.message, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Entrar';
+                }
+            });
+
+            // Cadastro
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('register-name').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const passwordConfirm = document.getElementById('register-password-confirm').value;
+                const btn = document.getElementById('register-btn');
+                const msg = document.getElementById('register-message');
+
+                if (password !== passwordConfirm) {
+                    showMessage(msg, 'As senhas não coincidem', 'error');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showMessage(msg, 'A senha deve ter pelo menos 6 caracteres', 'error');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Criando conta...';
+
+                const result = await authManager.register(name, email, password);
+
+                if (result.success) {
+                    showMessage(msg, 'Conta criada com sucesso! Faça login agora.', 'success');
+                    setTimeout(() => {
+                        switchTab('login');
+                        registerForm.reset();
+                        document.getElementById('login-email').value = email;
+                        btn.disabled = false;
+                        btn.textContent = 'Criar conta';
+                    }, 1500);
+                } else {
+                    showMessage(msg, result.message, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Criar conta';
+                }
+            });
+
+            function showMessage(element, text, type) {
+                element.textContent = text;
+                element.className = `form-message ${type}`;
+            }
+        });
+    </script>
+</body>
+</html>

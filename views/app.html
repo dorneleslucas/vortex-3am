@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Painel VORTEX para personal trainers gerenciarem alunos, treinos e evolucao.">
-    <title>VORTEX | Area do Personal</title>
+    <meta name="description" content="Painel VORTEX - Area do aluno para acompanhar treinos e evolucao.">
+    <title>VORTEX | Meu Painel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
@@ -12,19 +12,26 @@
     <link rel="stylesheet" href="assets/_common/styles/global.css">
     <link rel="stylesheet" href="assets/_common/styles/components.css">
     <link rel="stylesheet" href="assets/app/styles/dashboard.css">
+    <script src="js/user-api.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/route-guard.js"></script>
+    <script>
+        new RouteGuard('aluno');
+    </script>
 </head>
 <body class="app-body">
-    <aside class="app-sidebar" aria-label="Navegacao da area do personal">
+    <aside class="app-sidebar" aria-label="Navegacao da area do aluno">
         <a class="brand" href="../index.html" aria-label="Voltar para home VORTEX">
             <strong>VORTEX</strong>
         </a>
         <nav>
             <a class="is-active" href="#dashboard">Dashboard</a>
-            <a href="#alunos">Alunos</a>
-            <a href="#treinos">Treinos</a>
-            <a href="#biblioteca">Biblioteca</a>
-            <a href="#relatorios">Relatorios</a>
+            <a href="#treinos">Meus treinos</a>
+            <a href="#perfil">Meu perfil</a>
         </nav>
+        <div style="position: absolute; bottom: 20px; left: 0; right: 0; padding: 0 20px;">
+            <button id="btn-logout" class="button button-secondary" style="width: 100%; font-size: 0.9em;">Sair</button>
+        </div>
     </aside>
 
     <main class="app-main" id="dashboard">
@@ -36,141 +43,105 @@
                 <span class="sr-only">Abrir menu do painel</span>
             </button>
             <section>
-                <p class="eyebrow">Area do personal</p>
-                <h1>Bom treino, Rafael.</h1>
+                <p class="eyebrow">Bem-vindo ao VORTEX</p>
+                <h1 id="user-greeting">Carregando...</h1>
             </section>
             <menu aria-label="Acoes do painel">
-                <li><button class="button button-secondary" type="button">Exportar</button></li>
-                <li><button class="button button-primary" type="button">Novo treino</button></li>
+                <li><button id="btn-logout-top" class="button button-secondary" type="button">Sair</button></li>
             </menu>
         </header>
 
         <nav class="mobile-panel-nav" id="panel-navigation" aria-label="Menu mobile do painel">
             <a href="#dashboard">Dashboard</a>
-            <a href="#alunos">Alunos</a>
-            <a href="#treinos">Treinos</a>
-            <a href="#biblioteca">Biblioteca</a>
-            <a href="#relatorios">Relatorios</a>
+            <a href="#treinos">Meus treinos</a>
+            <a href="#perfil">Meu perfil</a>
         </nav>
 
-        <section class="summary-grid" aria-label="Resumo da operacao">
+        <section class="summary-grid" aria-label="Resumo do aluno">
             <article>
-                <span>Total de alunos</span>
-                <strong>24</strong>
-                <p>3 novos esta semana</p>
+                <span>Treinos concluídos</span>
+                <strong id="stat-completed">0</strong>
+                <p>Esta semana</p>
             </article>
             <article>
-                <span>Treinos ativos</span>
-                <strong>38</strong>
-                <p>12 vencem em ate 7 dias</p>
+                <span>Treinos pendentes</span>
+                <strong id="stat-pending">0</strong>
+                <p>Aguardando execução</p>
             </article>
             <article>
-                <span>Execucoes hoje</span>
-                <strong>17</strong>
-                <p>71% da meta diaria</p>
+                <span>Dias em sequência</span>
+                <strong id="stat-streak">0</strong>
+                <p>Mantenha a consistência!</p>
             </article>
             <article>
-                <span>Alertas</span>
-                <strong>04</strong>
-                <p>Alunos pedem ajuste</p>
+                <span>Objetivo</span>
+                <strong id="stat-goal">-</strong>
+                <p>Seu foco principal</p>
             </article>
         </section>
 
         <section class="workspace-grid">
-            <article class="students-panel" id="alunos" aria-labelledby="students-title">
+            <article class="students-panel" id="treinos" aria-labelledby="workouts-title">
                 <header class="panel-heading">
                     <section>
-                        <p class="eyebrow">Alunos</p>
-                        <h2 id="students-title">Lista de alunos</h2>
+                        <p class="eyebrow">Treinos</p>
+                        <h2 id="workouts-title">Seus treinos ativos</h2>
                     </section>
-                    <label>
-                        <span class="sr-only">Buscar aluno</span>
-                        <input class="student-search" type="search" placeholder="Buscar aluno">
-                    </label>
                 </header>
 
-                <ul class="student-list">
-                    <li>
-                        <article>
-                            <strong>Marina Costa</strong>
-                            <p>Hipertrofia · treino A/B</p>
-                            <span>Hoje, 18:30</span>
-                        </article>
-                    </li>
-                    <li>
-                        <article>
-                            <strong>Joao Lima</strong>
-                            <p>Futebol · velocidade</p>
-                            <span>Amanha, 07:00</span>
-                        </article>
-                    </li>
-                    <li>
-                        <article>
-                            <strong>Ana Torres</strong>
-                            <p>Casa · mobilidade</p>
-                            <span>Sexta, 19:00</span>
-                        </article>
-                    </li>
-                    <li>
-                        <article>
-                            <strong>Bruno Alves</strong>
-                            <p>Crossfit · resistencia</p>
-                            <span>Segunda, 06:30</span>
-                        </article>
-                    </li>
+                <ul class="student-list" id="workout-list">
+                    <li><p style="text-align: center; padding: 20px; color: #999;">Nenhum treino disponível no momento</p></li>
                 </ul>
             </article>
 
-            <article class="workout-editor" id="treinos" aria-labelledby="workout-title">
+            <article class="workout-editor" id="perfil" aria-labelledby="profile-title">
                 <header class="panel-heading">
                     <section>
-                        <p class="eyebrow">Editor de treinos</p>
-                        <h2 id="workout-title">Treino de Marina</h2>
+                        <p class="eyebrow">Perfil</p>
+                        <h2 id="profile-title">Seus dados</h2>
                     </section>
-                    <button class="button button-primary" type="button">Adicionar exercicio</button>
                 </header>
 
-                <ol class="exercise-list">
-                    <li>
-                        <strong>Agachamento livre</strong>
-                        <span>4 series · 10 reps · 90s</span>
-                    </li>
-                    <li>
-                        <strong>Supino reto</strong>
-                        <span>3 series · 12 reps · 75s</span>
-                    </li>
-                    <li>
-                        <strong>Remada baixa</strong>
-                        <span>4 series · 8 reps · 90s</span>
-                    </li>
-                    <li>
-                        <strong>Prancha frontal</strong>
-                        <span>3 series · 45s · 60s</span>
-                    </li>
-                </ol>
+                <div style="padding: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Nome:</label>
+                        <p id="profile-name">-</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Email:</label>
+                        <p id="profile-email">-</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Objetivo:</label>
+                        <p id="profile-goal">-</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-weight: 600; display: block; margin-bottom: 5px;">Personal Responsável:</label>
+                        <p id="profile-personal">-</p>
+                    </div>
+                </div>
             </article>
-        </section>
-
-        <section class="lower-grid">
-            <article class="library-panel" id="biblioteca" aria-labelledby="library-title">
-                <p class="eyebrow">Biblioteca</p>
-                <h2 id="library-title">Exercicios recentes</h2>
-                <ul>
-                    <li><strong>Levantamento terra</strong><span>Forca</span></li>
-                    <li><strong>Burpee</strong><span>Condicionamento</span></li>
-                    <li><strong>Afundo alternado</strong><span>Pernas</span></li>
-                </ul>
-            </article>
-
-            <aside class="report-panel" id="relatorios" aria-labelledby="report-title">
-                <p class="eyebrow">Relatorios</p>
-                <h2 id="report-title">Evolucao semanal</h2>
-                <meter min="0" max="100" value="76">76%</meter>
-                <p>76% dos alunos concluiram os treinos planejados nesta semana.</p>
-            </aside>
         </section>
     </main>
 
     <script src="assets/app/scripts/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = authManager.getUser();
+            if (user) {
+                document.getElementById('user-greeting').textContent = `Bom treino, ${user.name}!`;
+                document.getElementById('profile-name').textContent = user.name;
+                document.getElementById('profile-email').textContent = user.email;
+            }
+
+            const logoutButtons = document.querySelectorAll('#btn-logout, #btn-logout-top');
+            logoutButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    authManager.logout();
+                    window.location.href = '/vortex-3am/index.html';
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -63,6 +63,15 @@ $route->put("/{faq_id}", "Faqs\\Faqs:update");
 $route->delete("/{faq_id}", "Faqs\\Faqs:softDelete");
 $route->group(null);
 
+// CRUD de Alunos
+$route->group("/alunos");
+$route->post("/", "Alunos:criar");
+$route->get("/list", "Alunos:listar");
+$route->get("/list/{id}", "Alunos:buscar");
+$route->get("/personal/{personal_id}", "Alunos:buscarPorPersonal");
+$route->put("/{id}", "Alunos:atualizar");
+$route->delete("/{id}", "Alunos:excluir");
+$route->group(null);
 
 // CRUD da entidade principal do sistema: treinos.
 $route->post("/treinos", "Treinos:criar");
@@ -70,7 +79,6 @@ $route->get("/treinos", "Treinos:listar");
 $route->get("/treinos/{id}", "Treinos:buscar");
 $route->put("/treinos/{id}", "Treinos:atualizar");
 $route->delete("/treinos/{id}", "Treinos:excluir");
-$route->group(null);
 
 
 $route->dispatch();

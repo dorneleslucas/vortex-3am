@@ -12,6 +12,14 @@
     <link rel="stylesheet" href="assets/_common/styles/global.css">
     <link rel="stylesheet" href="assets/_common/styles/components.css">
     <link rel="stylesheet" href="assets/admin/styles/admin-painel.css">
+    <script src="js/alunos-api.js"></script>
+    <script src="js/alunos-manager.js"></script>
+    <script src="js/user-api.js"></script>
+    <script src="js/auth-manager.js"></script>
+    <script src="js/route-guard.js"></script>
+    <script>
+        new RouteGuard('personal');
+    </script>
 </head>
 <body class="admin-body">
     <aside class="admin-sidebar" aria-label="Navegacao administrativa">
@@ -19,12 +27,13 @@
             <strong>VORTEX</strong>
         </a>
         <nav>
-            <a class="is-active" href="#painel">Painel</a>
-            <a href="#personais">Personais</a>
-            <a href="#planos">Planos</a>
-            <a href="#logs">Logs</a>
-            <a href="#configuracoes">Configuracoes</a>
+            <a class="is-active" href="#painel">Dashboard</a>
+            <a href="#alunos">Meus Alunos</a>
+            <a href="#relatorios">Relatorios</a>
         </nav>
+        <div style="position: absolute; bottom: 20px; left: 0; right: 0; padding: 0 20px;">
+            <button id="btn-logout" class="button button-secondary" style="width: 100%; font-size: 0.9em;">Sair</button>
+        </div>
     </aside>
 
     <main class="admin-main" id="painel">
@@ -36,127 +45,87 @@
                 <span class="sr-only">Abrir menu administrativo</span>
             </button>
             <section>
-                <p class="eyebrow">Administracao</p>
-                <h1>Painel do sistema</h1>
+                <p class="eyebrow">Bem-vindo</p>
+                <h1 id="personal-greeting">Carregando...</h1>
             </section>
-            <a class="button button-secondary" href="../index.html">Sair</a>
+            <button id="btn-logout-top" class="button button-secondary">Sair</button>
         </header>
 
         <nav class="mobile-panel-nav" id="admin-navigation" aria-label="Menu mobile administrativo">
-            <a href="#painel">Painel</a>
-            <a href="#personais">Personais</a>
-            <a href="#planos">Planos</a>
-            <a href="#logs">Logs</a>
-            <a href="#configuracoes">Configuracoes</a>
+            <a href="#painel">Dashboard</a>
+            <a href="#alunos">Meus Alunos</a>
+            <a href="#relatorios">Relatorios</a>
         </nav>
 
-        <section class="admin-metrics" aria-label="Metricas administrativas">
+        <section class="admin-metrics" aria-label="Metricas do personal">
             <article>
-                <span>Personais ativos</span>
-                <strong>128</strong>
-                <p>+14 no mes</p>
+                <span>Total de alunos</span>
+                <strong id="metric-students">0</strong>
+                <p>Sob sua orientação</p>
             </article>
             <article>
-                <span>Cadastros pendentes</span>
-                <strong>09</strong>
-                <p>Aguardando aprovacao</p>
+                <span>Treinos ativos</span>
+                <strong id="metric-workouts">0</strong>
+                <p>Programados</p>
             </article>
             <article>
-                <span>Planos pagos</span>
-                <strong>84%</strong>
-                <p>Base total ativa</p>
+                <span>Taxa conclusão</span>
+                <strong id="metric-completion">0%</strong>
+                <p>Semana atual</p>
             </article>
             <article>
-                <span>Logs criticos</span>
-                <strong>02</strong>
-                <p>Revisar hoje</p>
+                <span>Status</span>
+                <strong>Ativo</strong>
+                <p>Pronto para trabalhar</p>
             </article>
         </section>
 
         <section class="admin-grid">
-            <article class="management-panel" id="personais" aria-labelledby="personals-title">
+            <article class="management-panel" id="alunos" aria-labelledby="students-title">
                 <header class="panel-heading">
                     <section>
                         <p class="eyebrow">Gestao</p>
-                        <h2 id="personals-title">Personais cadastrados</h2>
+                        <h2 id="students-title">Seus alunos</h2>
                     </section>
-                    <label>
-                        <span class="sr-only">Filtrar personal</span>
-                        <input class="admin-search" type="search" placeholder="Filtrar personal">
-                    </label>
+                    <button class="button button-primary" type="button" id="btn-novo-aluno">+ Novo aluno</button>
                 </header>
 
-                <ul class="personal-list">
-                    <li>
-                        <article>
-                            <strong>Rafael Mendes</strong>
-                            <p>Plano Pro · 24 alunos</p>
-                            <menu>
-                                <li><button class="button button-secondary" type="button">Editar</button></li>
-                                <li><button class="button button-primary" type="button">Aprovar</button></li>
-                            </menu>
-                        </article>
-                    </li>
-                    <li>
-                        <article>
-                            <strong>Carla Nunes</strong>
-                            <p>Plano Starter · 8 alunos</p>
-                            <menu>
-                                <li><button class="button button-secondary" type="button">Editar</button></li>
-                                <li><button class="button button-primary" type="button">Ativar</button></li>
-                            </menu>
-                        </article>
-                    </li>
-                    <li>
-                        <article>
-                            <strong>Diego Rocha</strong>
-                            <p>Cadastro pendente · 0 alunos</p>
-                            <menu>
-                                <li><button class="button button-secondary" type="button">Revisar</button></li>
-                                <li><button class="button button-primary" type="button">Aprovar</button></li>
-                            </menu>
-                        </article>
-                    </li>
+                <ul class="personal-list" id="student-list">
+                    <li><p style="text-align: center; padding: 20px; color: #999;">Carregando alunos...</p></li>
                 </ul>
             </article>
 
-            <aside class="plans-panel" id="planos" aria-labelledby="plans-title">
-                <p class="eyebrow">Planos</p>
-                <h2 id="plans-title">Limites atuais</h2>
+            <aside class="plans-panel" id="relatorios" aria-labelledby="reports-title">
+                <p class="eyebrow">Informacoes</p>
+                <h2 id="reports-title">Seu perfil</h2>
                 <ul>
-                    <li><strong>Starter</strong><span>10 alunos</span></li>
-                    <li><strong>Pro</strong><span>50 alunos</span></li>
-                    <li><strong>Studio</strong><span>200 alunos</span></li>
+                    <li><strong id="profile-name-admin">-</strong><span>Nome</span></li>
+                    <li><strong id="profile-email-admin">-</strong><span>Email</span></li>
+                    <li><strong id="profile-since-admin">-</strong><span>Membro desde</span></li>
                 </ul>
             </aside>
-        </section>
-
-        <section class="admin-grid">
-            <article class="logs-panel" id="logs" aria-labelledby="logs-title">
-                <p class="eyebrow">Logs</p>
-                <h2 id="logs-title">Acessos recentes</h2>
-                <ol>
-                    <li><strong>Login admin</strong><span>Hoje, 09:20</span></li>
-                    <li><strong>Plano alterado</strong><span>Ontem, 17:42</span></li>
-                    <li><strong>Cadastro aprovado</strong><span>Ontem, 14:08</span></li>
-                </ol>
-            </article>
-
-            <article class="settings-panel" id="configuracoes" aria-labelledby="settings-title">
-                <p class="eyebrow">Configuracoes</p>
-                <h2 id="settings-title">Regras globais</h2>
-                <form class="admin-form" action="#" method="post">
-                    <label for="student-limit">Limite padrao de alunos</label>
-                    <input id="student-limit" name="student-limit" type="number" value="50" min="1">
-                    <label for="trial-days">Dias de teste</label>
-                    <input id="trial-days" name="trial-days" type="number" value="14" min="1">
-                    <button class="button button-primary" type="submit">Salvar ajustes</button>
-                    <output class="admin-status" role="status" aria-live="polite"></output>
-                </form>
-            </article>
         </section>
     </main>
 
     <script src="assets/admin/scripts/gestao-personais.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = authManager.getUser();
+            if (user) {
+                document.getElementById('personal-greeting').textContent = `Bem-vindo, ${user.name}!`;
+                document.getElementById('profile-name-admin').textContent = user.name;
+                document.getElementById('profile-email-admin').textContent = user.email;
+                document.getElementById('profile-since-admin').textContent = new Date().toLocaleDateString('pt-BR');
+            }
+
+            const logoutButtons = document.querySelectorAll('#btn-logout, #btn-logout-top');
+            logoutButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    authManager.logout();
+                    window.location.href = '/vortex-3am/index.html';
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="views/assets/_common/styles/global.css">
     <link rel="stylesheet" href="views/assets/_common/styles/components.css">
     <link rel="stylesheet" href="views/assets/public/styles/home.css">
+
+    <script src="js/alunos-api.js"></script>
+    <script src="js/alunos-manager.js"></script>
 </head>
 <body class="custom-cursor">
     <div class="cursor-dot" aria-hidden="true"></div>
@@ -37,14 +40,13 @@
             <ul class="nav-links" id="main-menu">
                 <li><a href="#beneficios">Beneficios</a></li>
                 <li><a href="#fluxo">Fluxo</a></li>
-                <li><a href="views/app.html">App</a></li>
-                <li><a href="views/admin.html">Admin</a></li>
+                <li><a href="views/auth.html">Entrar</a></li>
                 <li><a href="#contato">Contato</a></li>
             </ul>
 
             <menu class="nav-actions" aria-label="Acoes da conta">
-                <li><a class="button button-secondary" href="views/app.html">Entrar</a></li>
-                <li><a class="button button-primary" href="#cadastro">Comecar agora</a></li>
+                <li><a class="button button-secondary" href="views/auth.html">Entrar</a></li>
+                <li><a class="button button-primary" href="views/auth.html">Comecar agora</a></li>
             </menu>
         </nav>
     </header>
@@ -60,8 +62,8 @@
                         acompanharem execucoes e manterem cada aluno no ritmo certo.
                     </p>
                     <menu class="hero-actions" aria-label="Acoes principais">
-                        <li><a class="button button-primary button-large" href="#cadastro">Comecar agora</a></li>
-                        <li><a class="button button-ghost button-large" href="views/app.html">Ver painel</a></li>
+                        <li><a class="button button-primary button-large" href="views/auth.html">Comecar agora</a></li>
+                        <li><a class="button button-ghost button-large" href="views/auth.html">Ver painel</a></li>
                     </menu>
                 </div>
 
@@ -92,10 +94,10 @@
                 <section class="dashboard-preview" aria-label="Resumo do dashboard">
                     <aside class="sidebar-preview" aria-label="Menu lateral do aplicativo">
                         <strong>VTX</strong>
-                        <a href="views/app.html">Dashboard</a>
-                        <a href="#beneficios">Alunos</a>
-                        <a href="#fluxo">Treinos</a>
-                        <a href="#contato">Relatorios</a>
+                        <a href="views/auth.html">Dashboard</a>
+                        <a href="views/auth.html">Alunos</a>
+                        <a href="views/auth.html">Treinos</a>
+                        <a href="views/auth.html">Relatorios</a>
                     </aside>
                     <article class="panel-preview">
                         <header>
@@ -187,8 +189,8 @@
                     com busca e formularios claros para cadastro e edicao.
                 </p>
                 <menu class="inline-actions" aria-label="Acoes da area do personal">
-                    <li><a class="button button-primary" href="views/app.html">Abrir area app</a></li>
-                    <li><a class="button button-secondary" href="views/admin.html">Abrir admin</a></li>
+                    <li><a class="button button-primary" href="views/auth.html">Abrir area app</a></li>
+                    <li><a class="button button-secondary" href="views/auth.html">Abrir admin</a></li>
                 </menu>
             </article>
 
@@ -229,9 +231,8 @@
             </article>
             <nav aria-label="Links do rodape">
                 <a href="#beneficios">Beneficios</a>
-                <a href="views/app.html">Login</a>
-                <a href="views/admin.html">Admin</a>
-                <a href="#cadastro">Cadastro</a>
+                <a href="views/auth.html">Login</a>
+                <a href="views/auth.html">Cadastro</a>
             </nav>
             <address>
                 contato@vortex.fit<br>

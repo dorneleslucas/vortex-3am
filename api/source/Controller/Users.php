@@ -26,7 +26,7 @@ class Users extends Api
 
         $user = new User(
             null,
-            2,
+            3,
             $data['name'],
             $data['email'],
             $data['password']
@@ -40,7 +40,10 @@ class Users extends Api
         $response = [
             "id" => $user->getId(),
             "name" => $user->getName(),
-            "email" => $user->getEmail()
+            "email" => $user->getEmail(),
+            "type_id" => 3,
+            "photo" => $user->getPhoto(),
+            "token" => null
         ];
 
         $this->call(201,"success","Usuário inserido com sucesso","created")->back($response);
@@ -72,6 +75,8 @@ class Users extends Api
         $response = [
             "id" => $user->getId(),
             "name" => $user->getName(),
+            "email" => $user->getEmail(),
+            "type_id" => $user->getTypeId(),
             "photo" => $user->getPhoto(),
             "token" => $user->getToken(),
         ];
@@ -109,6 +114,8 @@ class Users extends Api
         $response = [
             "id" => $user->getId(),
             "name" => $user->getName(),
+            "email" => $user->getEmail(),
+            "type_id" => $user->getTypeId(),
             "photo" => $user->getPhoto(),
             "token" => $user->getToken(),
         ];

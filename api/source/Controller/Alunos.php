@@ -10,7 +10,7 @@ class Alunos extends Api
     public function criar(array $data): void
     {
         if (!$this->dadosObrigatoriosValidos($data)) {
-            $this->call(400, "bad_request", "personalId e nome são obrigatórios", "error")->back();
+            $this->call(400, "bad_request", "personal_id e nome são obrigatórios", "error")->back();
             return;
         }
 

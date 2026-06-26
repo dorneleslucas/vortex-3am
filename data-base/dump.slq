@@ -1,4 +1,4 @@
-=-- ======================================================
+-- ======================================================
 -- SISTEMA VORTEX - Banco de Dados Corrigido
 -- ======================================================
 
@@ -22,6 +22,15 @@ CREATE TABLE `faqs_categories` (
 -- TABELAS PRINCIPAIS
 -- ======================================================
 
+-- 1. Tipos de usuários
+DROP TABLE IF EXISTS `users_types`;
+CREATE TABLE `users_types` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- 3. Usuários do sistema
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -38,16 +47,6 @@ CREATE TABLE `users` (
   UNIQUE KEY `email_unique` (`email`),
   KEY `fk_users_user_types_idx` (`type_id`),
   CONSTRAINT `fk_users_user_types` FOREIGN KEY (`type_id`) REFERENCES `users_types` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
--- 1. Tipos de usuários
-DROP TABLE IF EXISTS `users_types`;
-CREATE TABLE `users_types` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 4. FAQs
@@ -139,12 +138,13 @@ CREATE TABLE `treino_exercicios` (
 -- Inserir tipos de usuário
 INSERT INTO `users_types` (name) VALUES
 ('Administrador'),
-('Personal');
+('Personal'),
+('Aluno');
 
 -- Inserir usuários
 INSERT INTO `users` (type_id, name, email, password) VALUES
-(1, 'Administrador', 'admin@vortex.com', '123456'),
-(2, 'Rafael Personal', 'rafael@vortex.com', '123456');
+(1, 'Administrador', 'admin@vortex.com', '$2y$12$d0eiy0MtWV1DSGSgfkrxjO47fNJx9LR432zZMpNswoYAiDXxxWVIG'),
+(2, 'Rafael Personal', 'rafael@vortex.com', '$2y$12$d0eiy0MtWV1DSGSgfkrxjO47fNJx9LR432zZMpNswoYAiDXxxWVIG');
 
 -- Inserir categorias de FAQ
 INSERT INTO `faqs_categories` (name) VALUES

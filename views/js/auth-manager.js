@@ -7,9 +7,7 @@ class AuthManager {
 
   async login(email, password, userType) {
     try {
-      const response = userType === 'personal'
-        ? await this.api.loginAdmin(email, password)
-        : await this.api.login(email, password);
+      const response = await this.api.login(email, password, userType);
 
       if (response.code === 200 && response.data?.token) {
         this.setToken(response.data.token);
@@ -22,9 +20,9 @@ class AuthManager {
     }
   }
 
-  async register(name, email, password) {
+  async register(name, email, password, userType = 'aluno') {
     try {
-      const response = await this.api.register(name, email, password);
+      const response = await this.api.register(name, email, password, userType);
 
       if (response.code === 201) {
         return { success: true, data: response.data };
@@ -78,9 +76,11 @@ class AuthManager {
 
   getUserType() {
     const user = this.getUser();
-    if (user?.type_id === 1) return 'admin';
-    if (user?.type_id === 2) return 'personal';
-    if (user?.type_id === 3) return 'aluno';
+    const typeId = Number(user?.type_id);
+
+    if (typeId === 1) return 'admin';
+    if (typeId === 2) return 'personal';
+    if (typeId === 3) return 'aluno';
     return null;
   }
 
@@ -91,14 +91,14 @@ class AuthManager {
 
   redirectIfNotAuth(requiredType = null) {
     if (!this.isAuthenticated()) {
-      window.location.href = '/vortex-3am/views/auth.html';
+      window.location.href = `${window.location.origin}/vortex-3am/views/auth.html`;
       return false;
     }
 
     if (requiredType) {
       const userType = this.getUserType();
       if (userType !== requiredType && userType !== 'admin') {
-        window.location.href = '/vortex-3am/views/auth.html';
+        window.location.href = `${window.location.origin}/vortex-3am/views/auth.html`;
         return false;
       }
     }
@@ -110,9 +110,11 @@ class AuthManager {
     if (this.isAuthenticated()) {
       const userType = this.getUserType();
       if (userType === 'aluno') {
-        window.location.href = '/vortex-3am/views/app.html';
+        window.location.href = `${window.location.origin}/vortex-3am/views/app.html`;
       } else if (userType === 'personal') {
-        window.location.href = '/vortex-3am/views/admin.html';
+        window.location.href = `${window.location.origin}/vortex-3am/views/admin.html`;
+      } else if (userType === 'admin') {
+        window.location.href = `${window.location.origin}/vortex-3am/views/admin.html`;
       }
     }
   }

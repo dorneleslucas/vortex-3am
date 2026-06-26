@@ -367,6 +367,7 @@
                 const email = document.getElementById('register-email').value;
                 const password = document.getElementById('register-password').value;
                 const passwordConfirm = document.getElementById('register-password-confirm').value;
+                const type = document.querySelector('input[name="register-type"]:checked').value;
                 const btn = document.getElementById('register-btn');
                 const msg = document.getElementById('register-message');
 
@@ -383,7 +384,7 @@
                 btn.disabled = true;
                 btn.textContent = 'Criando conta...';
 
-                const result = await authManager.register(name, email, password);
+                const result = await authManager.register(name, email, password, type);
 
                 if (result.success) {
                     showMessage(msg, 'Conta criada com sucesso! Faça login agora.', 'success');

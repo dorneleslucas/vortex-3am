@@ -1,5 +1,9 @@
 class AlunosAPI {
-  constructor(baseUrl = '/api') {
+  constructor(baseUrl = null) {
+    if (!baseUrl) {
+      baseUrl = `${window.location.origin}/vortex-3am/api`;
+    }
+
     this.baseUrl = baseUrl;
     this.endpoint = `${baseUrl}/alunos`;
   }
@@ -9,10 +13,10 @@ class AlunosAPI {
       const response = await fetch(`${this.endpoint}/`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
           'Authorization': `Bearer ${this.getToken()}`
         },
-        body: JSON.stringify(dados)
+        body: new URLSearchParams(dados)
       });
       return await response.json();
     } catch (error) {
@@ -26,7 +30,6 @@ class AlunosAPI {
       const response = await fetch(`${this.endpoint}/list`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getToken()}`
         }
       });
@@ -42,7 +45,6 @@ class AlunosAPI {
       const response = await fetch(`${this.endpoint}/list/${id}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getToken()}`
         }
       });
@@ -58,7 +60,6 @@ class AlunosAPI {
       const response = await fetch(`${this.endpoint}/personal/${personalId}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getToken()}`
         }
       });
@@ -74,10 +75,10 @@ class AlunosAPI {
       const response = await fetch(`${this.endpoint}/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
           'Authorization': `Bearer ${this.getToken()}`
         },
-        body: JSON.stringify(dados)
+        body: new URLSearchParams(dados)
       });
       return await response.json();
     } catch (error) {
@@ -91,7 +92,6 @@ class AlunosAPI {
       const response = await fetch(`${this.endpoint}/${id}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.getToken()}`
         }
       });
@@ -103,7 +103,7 @@ class AlunosAPI {
   }
 
   getToken() {
-    return localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+    return localStorage.getItem('vortex_token') || '';
   }
 }
 

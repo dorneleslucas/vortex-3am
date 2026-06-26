@@ -3,55 +3,69 @@
 namespace Source\Core;
 
 use DateTimeImmutable;
-use Exception;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
 class JWTToken
 {
-    private $secretKey = JWT_SECRET_KEY;
-    private $headerJWT = "HS512";
-    private $url = CONF_URL_BASE;
+    private string $secretKey = JWT_SECRET_KEY;
+    private string $url = CONF_URL_BASE;
 
     public function encode(array $payLoad): string
     {
-        $tokenId    = base64_encode(random_bytes(16));
-        $issuedAt   = new DateTimeImmutable();
-        $expire     = $issuedAt->modify('+90 minutes')->getTimestamp(); // 90 minutos
-
-        // Create the token as an array
-        $data = [
-            'iat'  => $issuedAt->getTimestamp(), // Issued at: time when the token was generated
-            'jti'  => $tokenId,                  // Json Token Id: an unique identifier for the token
-            'iss'  => $this->url,                // Issuer
-            'nbf'  => $issuedAt->getTimestamp(), // Not before
-            'exp'  => $expire,                   // Expire
-            'data' => $payLoad
+        $issuedAt = new DateTimeImmutable();
+        $header = [
+            "typ" => "JWT",
+            "alg" => "HS256"
+        ];
+        $payload = [
+            "iat" => $issuedAt->getTimestamp(),
+            "jti" => base64_encode(random_bytes(16)),
+            "iss" => $this->url,
+            "nbf" => $issuedAt->getTimestamp(),
+            "exp" => $issuedAt->modify("+90 minutes")->getTimestamp(),
+            "data" => $payLoad
         ];
 
-        // Encode the array to a JWT string.
-        return JWT::encode(
-            $data,         //Data to be encoded in the JWT
-            $this->secretKey, // The signing key
-            $this->headerJWT  // Algorithm used to sign the token, see https://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-40#section-3
-        );
+        $base64Header = $this->base64UrlEncode(json_encode($header));
+        $base64Payload = $this->base64UrlEncode(json_encode($payload));
+        $signature = hash_hmac("sha256", "{$base64Header}.{$base64Payload}", $this->secretKey, true);
+
+        return "{$base64Header}.{$base64Payload}." . $this->base64UrlEncode($signature);
     }
 
-    public function decode($token): bool | object
+    public function decode($token): bool|object
     {
-        try {
-            $token = JWT::decode($token, new Key($this->secretKey, $this->headerJWT));
-            $now = new DateTimeImmutable();
-            $serverName = $this->url;
+        $parts = explode(".", $token);
 
-            if ($token->iss !== $serverName || $token->nbf > $now->getTimestamp() || $token->exp < $now->getTimestamp())
-            {
-                return false;
-            }
-            return $token;
-        } catch (Exception) {
+        if (count($parts) !== 3) {
             return false;
         }
+
+        [$base64Header, $base64Payload, $base64Signature] = $parts;
+        $signature = $this->base64UrlDecode($base64Signature);
+        $validSignature = hash_hmac("sha256", "{$base64Header}.{$base64Payload}", $this->secretKey, true);
+
+        if (!hash_equals($validSignature, $signature)) {
+            return false;
+        }
+
+        $payload = json_decode($this->base64UrlDecode($base64Payload));
+        $now = (new DateTimeImmutable())->getTimestamp();
+
+        if (!$payload || $payload->iss !== $this->url || $payload->nbf > $now || $payload->exp < $now) {
+            return false;
+        }
+
+        return $payload;
     }
 
+    private function base64UrlEncode(string $data): string
+    {
+        return rtrim(strtr(base64_encode($data), "+/", "-_"), "=");
+    }
+
+    private function base64UrlDecode(string $data): string
+    {
+        $data .= str_repeat("=", (4 - strlen($data) % 4) % 4);
+        return base64_decode(strtr($data, "-_", "+/"));
+    }
 }

@@ -1,7 +1,5 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/source/Config/Config.php';
-require __DIR__ . '/source/Core/Connect.php';
 
 use Source\Core\Connect;
 

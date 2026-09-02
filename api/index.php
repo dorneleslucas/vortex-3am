@@ -23,13 +23,18 @@ $route = new Router(url("api"), ":");
 $route->namespace("Source\Controller");
 
 $route->get("/hello", "Api:hello");
+
 $route->group("/users");
 $route->post("/register","Users:register"); // Registrar usuário comum
 $route->post("/login","Users:auth"); // login de usuário comum
 $route->put("/update","Users:update"); // update de usuário comum
-$route->post("/register-admin","Users:registerAdmin"); // Registrar usuário admin NÃO IMPLEMENTADO
+$route->post("/register-personal","Users:registerPersonal");
+$route->post("/login-personal","Users:authPersonal");
+$route->put("/update-personal","Users:updatePersonal");
+$route->post("/register-admin","Users:registerAdmin"); 
 $route->post("/login-admin","Users:authAdmin"); // login de usuário admin
 $route->put("/update-admin","Users:updateAdmin"); // update de usuário admin
+$route->delete("/{id}", "Users:delete");
 $route->group(null);
 
 $route->group("/products");
@@ -80,6 +85,13 @@ $route->get("/treinos/{id}", "Treinos:buscar");
 $route->put("/treinos/{id}", "Treinos:atualizar");
 $route->delete("/treinos/{id}", "Treinos:excluir");
 
+$route->group("/exercicios");
+$route->get("/list", "Exercicios:listar");
+$route->get("/list/{id}", "Exercicios:buscar");
+$route->post("/", "Exercicios:criar");
+$route->put("/{id}", "Exercicios:atualizar");
+$route->delete("/{id}", "Exercicios:excluir");
+$route->group(null);
 
 $route->dispatch();
 

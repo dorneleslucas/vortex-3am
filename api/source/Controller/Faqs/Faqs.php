@@ -62,12 +62,10 @@ class Faqs extends Api
         ];
 
         $this->call(200, "success", "FAQ encontrado", "success")->back($response);
-
     }
     public function create(array $data): void
     {
-        $data = json_decode(file_get_contents("php://input"), true) ?? [];
-
+    
         if (!$this->validate($data)) {
             $this->call(
                 400,
@@ -87,8 +85,7 @@ class Faqs extends Api
                 "error"
             )->back();
             return;
-        }
-        ;
+        };
 
         $faq = new Faq(
             null,

@@ -98,6 +98,11 @@ class User extends Model
         return $this->token;
     }
 
+    public function setActive(?string $active): void
+{
+    $this->active = $active;
+}
+
     public function insert (): bool
     {
         $query = "SELECT * FROM {$this->table} WHERE email = :email";
@@ -117,7 +122,7 @@ class User extends Model
         return true;
     }
 
-    public function login (string $email, string $password, int $typeId = 2): bool
+    public function login (string $email, string $password, int $typeId = 1): bool
     {
         $query = "SELECT * FROM {$this->table} WHERE email = :email AND type_id = :typeId";
         $stmt = Connect::getInstance()->prepare($query);

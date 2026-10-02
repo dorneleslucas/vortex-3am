@@ -27,6 +27,11 @@ class Treinos extends Api
             $data["dataFim"] ?? null,
             $data["status"] ?? "ativo"
         );
+        if (!$this->authToken(2)) {
+        $this->call(401, "unauthorized", "Usuário não autenticado ou sem permissão.", "error")->back();
+        return;
+    }
+
 
         if (!$treino->criar()) {
             $this->call(500, "internal_error", "Erro ao cadastrar treino", "error")->back();
@@ -79,8 +84,14 @@ class Treinos extends Api
     
     public function atualizar(array $data): void
     {
+        
+     if (!$this->authToken(2)) {
+        $this->call(401, "unauthorized", "Usuário não autenticado ou sem permissão.", "error")->back();
+        return;
+    }
         $id = $data["id"] ?? null;
 
+        
         if (!filter_var($id, FILTER_VALIDATE_INT)) {
             $this->call(400, "bad_request", "ID do treino invalido", "error")->back();
             return;
@@ -119,6 +130,11 @@ class Treinos extends Api
 
     public function excluir(array $data): void
     {
+        
+     if (!$this->authToken(2)) {
+        $this->call(401, "unauthorized", "Usuário não autenticado ou sem permissão.", "error")->back();
+        return;
+    }
         $id = $data["id"] ?? null;
 
         if (!filter_var($id, FILTER_VALIDATE_INT)) {

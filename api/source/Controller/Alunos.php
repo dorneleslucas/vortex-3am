@@ -24,6 +24,7 @@ class Alunos extends Api
             $data["ativo"] ?? 1
         );
 
+        
         if (!$aluno->criar()) {
             $this->call(500, "internal_error", "Erro ao cadastrar aluno", "error")->back();
             return;

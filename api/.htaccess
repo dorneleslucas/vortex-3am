@@ -1,3 +1,5 @@
+Options -MultiViews
+
 RewriteEngine On
 
 RewriteCond %{SCRIPT_FILENAME} !-f

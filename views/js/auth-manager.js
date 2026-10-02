@@ -7,9 +7,11 @@ class AuthManager {
 
   async login(email, password, userType) {
     try {
-      const response = userType === 'personal'
+      const response = userType === 'admin'
         ? await this.api.loginAdmin(email, password)
-        : await this.api.login(email, password);
+        : userType === 'personal'
+          ? await this.api.loginPersonal(email, password)
+          : await this.api.login(email, password);
 
       if (response.code === 200 && response.data?.token) {
         this.setToken(response.data.token);
@@ -22,9 +24,11 @@ class AuthManager {
     }
   }
 
-  async register(name, email, password) {
+  async register(name, email, password, userType = 'aluno') {
     try {
-      const response = await this.api.register(name, email, password);
+      const response = userType === 'personal'
+        ? await this.api.registerPersonal(name, email, password)
+        : await this.api.register(name, email, password);
 
       if (response.code === 201) {
         return { success: true, data: response.data };

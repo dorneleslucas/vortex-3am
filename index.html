@@ -12,9 +12,6 @@
     <link rel="stylesheet" href="views/assets/_common/styles/global.css">
     <link rel="stylesheet" href="views/assets/_common/styles/components.css">
     <link rel="stylesheet" href="views/assets/public/styles/home.css">
-
-    <script src="js/alunos-api.js"></script>
-    <script src="js/alunos-manager.js"></script>
 </head>
 <body class="custom-cursor">
     <div class="cursor-dot" aria-hidden="true"></div>
@@ -205,6 +202,17 @@
             </aside>
         </section>
 
+        <!-- Bloco independente: o faqList.js adiciona as perguntas dentro de #list-faqs. -->
+        <section class="wrapper reveal" id="faqs" aria-labelledby="faqs-title">
+            <p class="eyebrow">FAQ</p>
+            <h2 id="faqs-title">Perguntas frequentes</h2>
+            <dl id="list-faqs" aria-live="polite">
+                <div>
+                    <dt>Carregando perguntas...</dt>
+                </div>
+            </dl>
+        </section>
+
         <section class="signup section-band" id="cadastro" aria-labelledby="signup-title">
             <article class="wrapper signup-panel reveal">
                 <p class="eyebrow">Comece o teste</p>
@@ -243,5 +251,6 @@
 
     <script src="views/assets/_common/scripts/menuMobile.js"></script>
     <script src="views/assets/public/scripts/home.js"></script>
+    <script src="views/assets/public/scripts/faqList.js"></script>
 </body>
 </html>

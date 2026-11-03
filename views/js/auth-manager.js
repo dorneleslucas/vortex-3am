@@ -5,65 +5,48 @@ class AuthManager {
     this.userKey = 'vortex_user';
   }
 
-  async login(email, password, userType) {
-    try {
-      const response = userType === 'admin'
-        ? await this.api.loginAdmin(email, password)
-        : userType === 'personal'
-          ? await this.api.loginPersonal(email, password)
-          : await this.api.login(email, password);
+  async login(email, password, type) {
+    const response = await this.api.login(email, password, type);
 
-      if (response.code === 200 && response.data?.token) {
-        this.setToken(response.data.token);
-        this.setUser(response.data);
-        return { success: true, data: response.data };
-      }
-      return { success: false, message: response.message };
-    } catch (error) {
-      return { success: false, message: 'Erro na comunicação com servidor' };
+    if (response.code !== 200 || !response.data?.token) {
+      throw new Error(response.message || 'Não foi possível fazer login.');
     }
+
+    this.setSession(response.data);
+    return response.data;
   }
 
-  async register(name, email, password, userType = 'aluno') {
-    try {
-      const response = userType === 'personal'
-        ? await this.api.registerPersonal(name, email, password)
-        : await this.api.register(name, email, password);
+  async register(name, email, password, type) {
+    const response = await this.api.register(name, email, password, type);
 
-      if (response.code === 201) {
-        return { success: true, data: response.data };
-      }
-      return { success: false, message: response.message };
-    } catch (error) {
-      return { success: false, message: 'Erro na comunicação com servidor' };
+    if (response.code !== 201) {
+      throw new Error(response.message || 'Não foi possível criar a conta.');
     }
+
+    return response.data;
   }
 
-  setToken(token) {
-    localStorage.setItem(this.tokenKey, token);
+  setSession(user) {
+    localStorage.setItem(this.tokenKey, user.token);
+    localStorage.setItem(this.userKey, JSON.stringify(user));
   }
 
   getToken() {
     return localStorage.getItem(this.tokenKey);
   }
 
-  setUser(user) {
-    localStorage.setItem(this.userKey, JSON.stringify(user));
-  }
-
   getUser() {
-    const user = localStorage.getItem(this.userKey);
-    return user ? JSON.parse(user) : null;
+    try {
+      return JSON.parse(localStorage.getItem(this.userKey));
+    } catch {
+      return null;
+    }
   }
 
   decodeToken(token) {
     try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
-      );
-      return JSON.parse(jsonPayload);
+      const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(payload));
     } catch {
       return null;
     }
@@ -71,54 +54,32 @@ class AuthManager {
 
   isAuthenticated() {
     const token = this.getToken();
-    if (!token) return false;
-
-    const decoded = this.decodeToken(token);
-    if (!decoded) return false;
-
-    const now = Math.floor(Date.now() / 1000);
-    return decoded.exp > now;
+    const payload = token ? this.decodeToken(token) : null;
+    return Boolean(payload?.exp && payload.exp > Math.floor(Date.now() / 1000));
   }
 
   getUserType() {
-    const user = this.getUser();
-    if (user?.type_id === 1) return 'admin';
-    if (user?.type_id === 2) return 'personal';
-    if (user?.type_id === 3) return 'aluno';
-    return null;
+    const typeId = this.getUser()?.type_id;
+    return ({ 1: 'admin', 2: 'personal', 3: 'aluno' })[typeId] || null;
+  }
+
+  redirectIfNotAuth(requiredType = null) {
+    if (!this.isAuthenticated() || (requiredType && this.getUserType() !== requiredType && this.getUserType() !== 'admin')) {
+      window.location.href = '/vortex-3am/views/auth.html';
+      return false;
+    }
+    return true;
+  }
+
+  autoRedirectIfAuth() {
+    if (!this.isAuthenticated()) return;
+
+    window.location.href = this.getUserType() === 'aluno' ? 'app.html' : 'admin.html';
   }
 
   logout() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
-  }
-
-  redirectIfNotAuth(requiredType = null) {
-    if (!this.isAuthenticated()) {
-      window.location.href = '/vortex-3am/views/auth.html';
-      return false;
-    }
-
-    if (requiredType) {
-      const userType = this.getUserType();
-      if (userType !== requiredType && userType !== 'admin') {
-        window.location.href = '/vortex-3am/views/auth.html';
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  autoRedirectIfAuth() {
-    if (this.isAuthenticated()) {
-      const userType = this.getUserType();
-      if (userType === 'aluno') {
-        window.location.href = '/vortex-3am/views/app.html';
-      } else if (userType === 'personal') {
-        window.location.href = '/vortex-3am/views/admin.html';
-      }
-    }
   }
 }
 

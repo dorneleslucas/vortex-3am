@@ -89,5 +89,9 @@ acme-3am-g1/
 
 ---
 
+## Entrega JavaScript POO
+
+A implementação do CRUD de alunos, treinos e exercícios, sua arquitetura, instruções de execução, evidências reproduzíveis e explicação de encapsulamento, herança, composição e protótipos está em [POO_README.md](POO_README.md).
+
 > 💡 **Dica:** Cada pasta possui seu próprio `README.MD` com explicações detalhadas.
 > Navegue pelas pastas para aprender mais sobre cada parte do projeto!

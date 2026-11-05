@@ -3,6 +3,7 @@
 namespace Source\Controller;
 
 use Source\Models\Exercicio;
+use Source\Models\ExercicioImage;
 
 class Exercicios extends Api
 {
@@ -101,10 +102,20 @@ class Exercicios extends Api
             return;
         }
 
+        $gallery = new ExercicioImage();
+        $images = $gallery->listByExercicio((int) $id);
         $exercicio = new Exercicio();
         if (!$exercicio->excluir((int) $id)) {
             $this->call(404, "not_found", "Exercício não encontrado ou já inativo", "error")->back();
             return;
+        }
+
+        foreach ($images as $image) {
+            $filename = $image['image_path'] ?? '';
+            if (is_string($filename) && preg_match('/^[a-f0-9]{32}\\.(jpg|png|webp)$/', $filename)) {
+                $path = __DIR__ . '/../../uploads/exercicios/' . $filename;
+                if (is_file($path)) @unlink($path);
+            }
         }
 
         $this->call(200, "success", "Exercício removido com sucesso", "success")->back();

@@ -93,6 +93,25 @@ class User extends Model
         $this->photo = $photo;
     }
 
+    public function updatePhotoById(int $id, string $photo): bool
+    {
+        try {
+            $stmt = Connect::getInstance()->prepare("UPDATE {$this->table} SET photo = :photo WHERE id = :id");
+            $stmt->execute([':photo' => $photo, ':id' => $id]);
+            if ($stmt->rowCount() < 1) {
+                $check = Connect::getInstance()->prepare("SELECT id FROM {$this->table} WHERE id = :id");
+                $check->execute([':id' => $id]);
+                if (!$check->fetch()) { $this->errorMessage = 'Usuário não encontrado.'; return false; }
+            }
+            $this->photo = $photo;
+            $this->id = $id;
+            return true;
+        } catch (\PDOException $e) {
+            $this->errorMessage = $e->getMessage();
+            return false;
+        }
+    }
+
     public function getToken(): ?string
     {
         return $this->token;

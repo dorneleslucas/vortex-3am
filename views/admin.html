@@ -100,6 +100,15 @@
             <aside class="plans-panel" id="relatorios" aria-labelledby="reports-title">
                 <p class="eyebrow">Informacoes</p>
                 <h2 id="reports-title">Seu perfil</h2>
+                <p><a href="exercicios-images.html">Administrar galeria de exercícios</a></p>
+                <div style="padding:12px">
+                    <img id="profile-photo" alt="Foto atual do perfil" width="96" height="96" style="width:96px;height:96px;object-fit:cover;border-radius:50%" hidden>
+                    <label for="profile-photo-input">Foto do perfil (JPEG, PNG ou WebP; até 5 MB)</label>
+                    <input id="profile-photo-input" type="file" accept="image/jpeg,image/png,image/webp">
+                    <img id="profile-photo-preview" alt="Prévia da nova foto" width="96" height="96" style="width:96px;height:96px;object-fit:cover;border-radius:50%" hidden>
+                    <button id="profile-photo-submit" type="button" class="button button-primary">Enviar foto</button>
+                    <p id="profile-photo-status" role="status" aria-live="polite"></p>
+                </div>
                 <ul>
                     <li><strong id="profile-name-admin">-</strong><span>Nome</span></li>
                     <li><strong id="profile-email-admin">-</strong><span>Email</span></li>
@@ -110,6 +119,7 @@
     </main>
 
     <script src="assets/admin/scripts/gestao-personais.js"></script>
+    <script type="module" src="assets/app/scripts/profile-photo.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const user = authManager.getUser();

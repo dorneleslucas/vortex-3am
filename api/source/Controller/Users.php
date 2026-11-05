@@ -3,9 +3,47 @@
 namespace Source\Controller;
 
 use Source\Models\User;
+use Source\Support\Upload;
 
 class Users extends Api
 {
+    public function uploadPhoto(array $data): void
+    {
+        $authenticated = false;
+        foreach ([1, 2, 3] as $typeId) {
+            if ($this->authToken($typeId)) { $authenticated = true; break; }
+        }
+        if (!$authenticated) { $this->call(401, 'unauthorized', 'Token ausente, inválido ou sem permissão.', 'error')->back(); return; }
+        $upload = $_FILES['photo'] ?? null;
+        if (!$upload) { $this->call(400, 'bad_request', 'Envie uma imagem no campo photo.', 'error')->back(); return; }
+        $user = new User();
+        if (!$user->selectById($this->userAuthId)) { $this->call(404, 'not_found', 'Usuário autenticado não encontrado.', 'error')->back(); return; }
+        try {
+            $uploader = new Upload(__DIR__ . '/../../uploads/users');
+            $newPhoto = $uploader->image($upload);
+        } catch (\Throwable $e) {
+            $this->call(400, 'upload_error', $e->getMessage(), 'error')->back(); return;
+        }
+        $oldPhoto = $user->getPhoto();
+        if (!$user->updatePhotoById($this->userAuthId, $newPhoto)) {
+            $this->removeManagedPhoto($newPhoto);
+            $this->call(500, 'persistence_error', 'Não foi possível salvar a foto do perfil.', 'error')->back(); return;
+        }
+        if ($oldPhoto) $this->removeManagedPhoto($oldPhoto);
+        $this->call(200, 'success', 'Foto do perfil atualizada.', 'success')->back([
+            'id' => $this->userAuthId,
+            'photo' => $newPhoto,
+            'url' => rtrim(CONF_URL_BASE, '/') . '/api/uploads/users/' . rawurlencode(basename($newPhoto))
+        ]);
+    }
+
+    private function removeManagedPhoto(string $filename): void
+    {
+        if (basename($filename) !== $filename || !preg_match('/^[a-f0-9]{32}\\.(jpg|png|webp)$/', $filename)) return;
+        $path = __DIR__ . '/../../uploads/users/' . $filename;
+        if (is_file($path)) @unlink($path);
+    }
+
     public function register(array $data): void
     {
         if (!isset($data['password']) || empty($data['password'])) {

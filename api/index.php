@@ -35,6 +35,7 @@ $route->post("/register-admin","Users:registerAdmin");
 $route->post("/login-admin","Users:authAdmin"); // login de usuário admin
 $route->put("/update-admin","Users:updateAdmin"); // update de usuário admin
 $route->delete("/{id}", "Users:delete");
+$route->post("/photo", "Users:uploadPhoto");
 $route->group(null);
 
 $route->group("/products");
@@ -86,6 +87,9 @@ $route->put("/treinos/{id}", "Treinos:atualizar");
 $route->delete("/treinos/{id}", "Treinos:excluir");
 
 $route->group("/exercicios");
+$route->get("/{exercicio_id}/images", "ExerciciosImages:listar");
+$route->post("/{exercicio_id}/images", "ExerciciosImages:upload");
+$route->delete("/{exercicio_id}/images/{image_id}", "ExerciciosImages:remove");
 $route->get("/list", "Exercicios:listar");
 $route->get("/list/{id}", "Exercicios:buscar");
 $route->post("/", "Exercicios:criar");

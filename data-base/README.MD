@@ -91,3 +91,7 @@ mysql -u root -p < dump.sql
 > 💡 **Dica:** Sempre que adicionar uma nova tabela ao projeto, atualize o `dump.sql`
 > para que todos da equipe tenham a mesma estrutura.
 
+# Galeria de imagens de exercícios
+
+Importe `dump.slq` e execute `migrations/2026-11-03-exercicio-images.sql` no schema `vortex_3am`. A migração cria `exercicio_images`, uma linha por imagem, com FK `exercicio_id` para a tabela existente `exercicios(id)`. Excluir um exercício remove os metadados em cascata; a API também remove os arquivos de `api/uploads/exercicios`.
+

@@ -103,6 +103,14 @@
                 </header>
 
                 <div style="padding: 20px;">
+                    <div class="profile-photo-box" style="margin-bottom:20px">
+                        <img id="profile-photo" alt="Foto atual do perfil" width="112" height="112" hidden style="width:112px;height:112px;object-fit:cover;border-radius:50%;margin-bottom:12px">
+                        <label for="profile-photo-input">Foto (JPEG, PNG ou WebP; até 5 MB)</label>
+                        <input id="profile-photo-input" type="file" accept="image/jpeg,image/png,image/webp">
+                        <img id="profile-photo-preview" alt="Prévia da nova foto" hidden width="112" height="112" style="width:112px;height:112px;object-fit:cover;border-radius:50%;margin:12px 0">
+                        <button id="profile-photo-submit" type="button" class="button button-primary">Enviar foto</button>
+                        <p id="profile-photo-status" role="status" aria-live="polite"></p>
+                    </div>
                     <div style="margin-bottom: 15px;">
                         <label style="font-weight: 600; display: block; margin-bottom: 5px;">Nome:</label>
                         <p id="profile-name">-</p>
@@ -125,6 +133,7 @@
     </main>
 
     <script src="assets/app/scripts/dashboard.js"></script>
+    <script type="module" src="assets/app/scripts/profile-photo.js"></script>
     <script>
         
     </script>

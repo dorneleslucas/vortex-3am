@@ -12,8 +12,7 @@ Implementação do CRUD orientado a objetos ligado à API PHP/MySQL. A branch de
 
 ## Arquitetura
 
-- `views/assets/_common/classes/EntityBase.js`: validação comum de IDs, textos e flags.
-- `alunos.js`, `Treinos.js`, `Exercicios.js` e `Users.js`: entidades com campos privados, construtor, getters/setters e `toJSON()`. As entidades não fazem chamadas de rede.
+- `alunos.js`, `Treinos.js`, `Exercicios.js` e `Users.js`: entidades independentes, com campos privados, construtor, getters/setters, validações próprias e `toJSON()`. As entidades não herdam de uma classe-base nem fazem chamadas de rede.
 - `views/assets/_common/classes/HttpClientBase.js`: encapsula URL, headers, token e verbos HTTP.
 - `views/assets/_common/services/*Service.js`: serviços especializados, todos derivados de `HttpClientBase` e mapeados às rotas reais em `api/index.php`.
 - `views/assets/app/scripts/gestao-poo.js`: coordena interface, validação por entidade, estados, toast e serviços. A página `views/alunos.html` oferece CRUD de alunos, treinos (entidade principal) e exercícios.
@@ -44,7 +43,7 @@ Rotas também podem ser inspecionadas no DevTools do navegador (Network): cada b
 ## Conceitos de POO
 
 - **Encapsulamento:** propriedades como `#nome`, `#email` e `#aluno_id` são privadas; getters/setters validam limites e formato antes de aceitar valores.
-- **Herança:** `AlunosService`, `TreinosService` e `ExerciciosService` herdam os métodos HTTP de `HttpClientBase`; as entidades reutilizam validações de `EntityBase`.
+- **Herança:** `AlunosService`, `TreinosService`, `ExerciciosService` e `ImagesService` herdam os métodos HTTP de `HttpClientBase`. As entidades são classes independentes.
 - **Composição:** `GestaoManager` compõe um serviço e uma entidade conforme a aba ativa. A camada visual coordena objetos, mas cada serviço trata apenas de seu endpoint.
 - **Protótipos:** `prototypes.js` acrescenta `String.prototype.toTitleCase()` para rótulos e `Array.prototype.sortBy(chave, direção)` para ordenar qualquer coleção por campo. `Object.defineProperty` mantém os métodos não enumeráveis; ambos são usados na tela de gestão.
 
@@ -55,3 +54,35 @@ Rotas também podem ser inspecionadas no DevTools do navegador (Network): cada b
 - `exercicios`: `nome`, `categoria`, `descricao`, `ativo`.
 
 O modelo `Treino` relaciona treino a aluno por `aluno_id`; o aluno aponta ao personal por `personal_id`. Exercícios têm CRUD próprio e ainda não são associados a `treino_exercicios` pela tela, pois os endpoints PHP registrados não oferecem CRUD para essa relação.
+
+## Etapa 07 — upload de imagens
+
+### Banco e arquivos
+
+Importe primeiro `data-base/dump.slq`, que já cria `exercicios`, e depois execute `data-base/migrations/2026-11-03-exercicio-images.sql` no banco `vortex_3am`. A tabela `exercicio_images` relaciona cada imagem a um exercício por `exercicio_id`, com FK e `ON DELETE CASCADE`. O banco guarda somente nome aleatório, texto alternativo e posição. Os arquivos ficam em `api/uploads/users` e `api/uploads/exercicios`. JPEG, PNG e WebP são permitidos, até 5 MB por imagem. Para até 10 imagens por requisição, configure no `php.ini` `upload_max_filesize=5M`, `post_max_size=52M` e `max_file_uploads=10` e reinicie o Apache.
+
+A tabela `exercicios` já é criada pelo dump. Para demonstrar no ambiente local, cadastre um exercício pela tela de gestão ou insira um registro de teste:
+
+```sql
+INSERT INTO exercicios (nome, categoria, descricao) VALUES ('Agachamento de demonstração', 'Pernas', 'Exercício para teste da galeria');
+```
+
+Use o ID do exercício criado na página de galeria.
+
+### Rotas e permissões
+
+| Método e rota | Multipart / parâmetros | Permissão e resposta |
+| --- | --- | --- |
+| `POST /users/photo` | `photo` (arquivo) | Token de usuário autenticado (aluno, personal ou admin); retorna `photo` e `url`. O ID vem do token, não do formulário. |
+| `GET /exercicios/{exercicio_id}/images` | ID do exercício na rota | Admin autenticado; retorna array de imagens e URLs públicas. |
+| `POST /exercicios/{exercicio_id}/images` | `images[]` (1 a 10 arquivos), `alt_text` opcional | Admin autenticado; retorna IDs e caminhos. |
+| `DELETE /exercicios/{exercicio_id}/images/{image_id}` | IDs do exercício e da imagem na rota | Admin autenticado; só remove imagem que pertença ao exercício indicado. |
+
+As imagens são enviadas em `FormData`; `HttpClientBase` remove o `Content-Type` padrão para o navegador acrescentar o boundary multipart. `Users::uploadPhoto` identifica o usuário pelo JWT validado. `ExerciciosImages` valida o exercício e a autorização, usa `Source\\Support\\Upload::image()` e delega os metadados ao model `ExercicioImage`, com prepared statements. Se o banco falhar, os arquivos e registros parciais daquela requisição são removidos. Ao atualizar foto de perfil, o arquivo antigo gerenciado só é removido depois do UPDATE bem-sucedido. A FK remove os metadados quando um exercício é excluído; o controller remove os arquivos correspondentes.
+
+### Interface e evidências
+
+- O perfil em `views/app.html` (aluno) e `views/admin.html` (personal/admin) tem seletor, prévia, envio, atualização da imagem e estados de carregamento, sucesso e erro. A validação no navegador aceita JPEG, PNG e WebP até 5 MB; o servidor valida MIME real e conteúdo.
+- `views/exercicios-images.html` é a interface administrativa da galeria de exercícios. Informe um ID de exercício, carregue a galeria, escolha várias imagens, veja prévias e remova imagens individualmente. A listagem vem do banco, portanto permanece após atualizar a página.
+- `ImagesService` estende `HttpClientBase` e centraliza as chamadas. A tela usa `textContent` para textos e restringe URLs de imagem ao mesmo host e à pasta de uploads da aplicação.
+- Para evidenciar: faça login como admin, crie um exercício, abra `views/exercicios-images.html`, envie pelo menos duas imagens, confirme os cartões e atualize a página. Depois remova uma delas e confirme que a outra continua. No perfil, troque a foto e atualize a página para confirmar a persistência. O DevTools/Network mostra as rotas e os payloads multipart.

@@ -95,3 +95,7 @@ A implementação do CRUD de alunos, treinos e exercícios, sua arquitetura, ins
 
 > 💡 **Dica:** Cada pasta possui seu próprio `README.MD` com explicações detalhadas.
 > Navegue pelas pastas para aprender mais sobre cada parte do projeto!
+
+## Upload de imagens — Etapa 07
+
+A foto de perfil autenticado e a galeria persistente de imagens de produtos estão documentadas em [ETAPA_07_UPLOAD.md](ETAPA_07_UPLOAD.md), incluindo rotas, migração, limites de upload, execução e roteiro para demonstrar o fluxo.

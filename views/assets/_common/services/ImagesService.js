@@ -13,6 +13,24 @@ export default class ImagesService extends HttpClientBase {
         return this.post("/users/photo", form);
     }
 
+    listarProduto(productId) {
+        return this.get("/products/:product_id/images", { product_id: productId });
+    }
+
+    enviarProduto(productId, files, altText = "") {
+        const form = new FormData();
+        for (const file of files) form.append("images[]", file);
+        if (altText) form.append("alt_text", altText);
+        return this.post("/products/:product_id/images", form, { product_id: productId });
+    }
+
+    removerProduto(productId, imageId) {
+        return this.delete("/products/:product_id/images/:image_id", {
+            product_id: productId,
+            image_id: imageId
+        });
+    }
+
     listarExercicio(exercicioId) { return this.get("/exercicios/:exercicio_id/images", { exercicio_id: exercicioId }); }
 
     enviarExercicio(exercicioId, files, altText = "") {

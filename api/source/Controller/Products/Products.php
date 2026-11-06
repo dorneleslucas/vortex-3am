@@ -7,6 +7,7 @@ namespace Source\Controller;
 
 
 use Source\Controller\Api;
+use Source\Models\ProductImage;
 use Source\Models\Store\Product;
 
 class Products extends Api
@@ -180,7 +181,13 @@ class Products extends Api
 
     public function delete (array $data): void
     {
-        if(!filter_var($data["product_id"], FILTER_VALIDATE_INT)) {
+        if(!$this->authToken(1)){
+            $this->call(401, "unauthorized", "Apenas administradores autenticados podem excluir produtos.", "error")->back();
+            return;
+        }
+
+        $productId = filter_var($data["product_id"] ?? null, FILTER_VALIDATE_INT);
+        if(!$productId || $productId < 1) {
             $this->call(
                 400,
                 "bad_request",
@@ -194,9 +201,20 @@ class Products extends Api
         // hard delete
         //if(!$product->deleteById($data["product_id"])){
         // soft delete
-        if(!$product->softDeleteById($data["product_id"])){
+        if(!$product->softDeleteById($productId)){
             $this->call(500, "internal_server_error", $product->getErrorMessage(), "error")->back();
             return;
+        }
+
+        // Este endpoint usa exclusão lógica; limpe também a galeria do produto.
+        $images = (new ProductImage())->deleteAllForProduct((int) $data["product_id"]);
+        foreach ($images as $image) {
+            $filename = $image['image_path'] ?? '';
+            $basename = basename($filename);
+            if ($basename === $filename && preg_match('/^[a-f0-9]{32}\\.(jpg|png|webp)$/', $basename)) {
+                $path = dirname(__DIR__, 3) . '/uploads/products/' . $basename;
+                if (is_file($path)) @unlink($path);
+            }
         }
 
         $this->call(200,"success","Produto excluído com sucesso","success")->back();

@@ -39,11 +39,14 @@ $route->post("/photo", "Users:uploadPhoto");
 $route->group(null);
 
 $route->group("/products");
-$route->get("/list", "Products\\Products:productsList");
-$route->get("/list/{productId}", "Products\\Products:productById");
-$route->post("/", "Products\\Products:create");
-$route->put("/{product_id}", "Products\\Products:update");
-$route->delete("/{product_id}", "Products\\Products:softDelete");
+$route->get("/{product_id}/images", "ProductsImages:listar");
+$route->post("/{product_id}/images", "ProductsImages:upload");
+$route->delete("/{product_id}/images/{image_id}", "ProductsImages:remove");
+$route->get("/list", "Products:listAll");
+$route->get("/list/{product_id}", "Products:listById");
+$route->post("/", "Products:insert");
+$route->put("/{product_id}", "Products:update");
+$route->delete("/{product_id}", "Products:delete");
 $route->group(null);
 
 $route->group("/products_categories");

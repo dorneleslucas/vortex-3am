@@ -7,36 +7,139 @@ use RuntimeException;
 
 class Upload
 {
-    private const MIME_EXTENSIONS = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
-    public int $maxImageSize = 5242880;
-    public array $allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    private const MIME_EXTENSIONS = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'application/pdf' => 'pdf',
+        'application/zip' => 'zip',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
+    ];
 
-    public function __construct(public string $destinationDirectory)
+    public string $destinationDirectory;
+    public int $maxFileSize = 10 * 1024 * 1024;
+    public int $maxImageSize = 5 * 1024 * 1024;
+    public array $allowedFileTypes = [
+        'application/pdf',
+        'application/zip',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ];
+    public array $allowedImageTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+    ];
+
+    public function __construct(string $destinationDirectory)
     {
-        if (trim($destinationDirectory) === '') throw new RuntimeException('A pasta de destino do upload deve ser informada.');
+        if (trim($destinationDirectory) === '') {
+            throw new RuntimeException('A pasta de destino do upload deve ser informada.');
+        }
+
+        $this->destinationDirectory = $destinationDirectory;
     }
 
     public function image(array $upload): string
     {
-        foreach (['name','tmp_name','error','size'] as $key) if (!array_key_exists($key, $upload)) throw new RuntimeException('Dados de upload inválidos.');
-        if (!is_string($upload['name']) || !is_string($upload['tmp_name']) || !is_int($upload['error']) || !is_int($upload['size'])) throw new RuntimeException('Dados de upload inválidos.');
-        if ($upload['error'] !== UPLOAD_ERR_OK) throw new RuntimeException(match ($upload['error']) {
-            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'A imagem excede o limite de tamanho.',
-            UPLOAD_ERR_NO_FILE => 'Nenhuma imagem foi enviada.',
-            UPLOAD_ERR_PARTIAL => 'A imagem foi recebida parcialmente.',
-            default => 'Falha ao receber a imagem.'
-        });
-        if (!is_uploaded_file($upload['tmp_name'])) throw new RuntimeException('Upload não recebido por uma requisição válida.');
-        $size = filesize($upload['tmp_name']);
-        if ($size === false || $size !== $upload['size'] || $size > $this->maxImageSize) throw new RuntimeException('Imagem inválida ou acima do limite de 5 MB.');
-        $mime = (new finfo(FILEINFO_MIME_TYPE))->file($upload['tmp_name']);
-        if (!is_string($mime) || !in_array($mime, $this->allowedImageTypes, true)) throw new RuntimeException('Formato não permitido. Use JPEG, PNG ou WebP.');
-        $info = getimagesize($upload['tmp_name']);
-        if ($info === false || strtolower($info['mime'] ?? '') !== $mime) throw new RuntimeException('O arquivo não contém uma imagem válida.');
-        if (!is_dir($this->destinationDirectory) && !mkdir($this->destinationDirectory, 0750, true) && !is_dir($this->destinationDirectory)) throw new RuntimeException('Não foi possível criar a pasta de uploads.');
-        if (!is_writable($this->destinationDirectory)) throw new RuntimeException('A pasta de uploads não permite gravação.');
-        $filename = bin2hex(random_bytes(16)) . '.' . self::MIME_EXTENSIONS[$mime];
-        if (!move_uploaded_file($upload['tmp_name'], $this->destinationDirectory . DIRECTORY_SEPARATOR . $filename)) throw new RuntimeException('Não foi possível armazenar a imagem.');
+        return $this->store($upload, $this->allowedImageTypes, $this->maxImageSize, true);
+    }
+
+    public function file(array $upload): string
+    {
+        return $this->store($upload, $this->allowedFileTypes, $this->maxFileSize, false);
+    }
+
+    private function store(array $upload, array $allowedTypes, int $maxSize, bool $isImage): string
+    {
+        if (trim($this->destinationDirectory) === '' || $maxSize <= 0 || $allowedTypes === []) {
+            throw new RuntimeException('A configuração de destino, tamanho e tipos permitidos do upload é inválida.');
+        }
+
+        foreach ($allowedTypes as $type) {
+            if (!is_string($type) || trim($type) === '') {
+                throw new RuntimeException('Os tipos permitidos devem ser informados como MIME types.');
+            }
+        }
+
+        if (!isset($upload['name'], $upload['tmp_name'], $upload['error'], $upload['size']) ||
+            !is_string($upload['name']) || !is_string($upload['tmp_name']) ||
+            !is_int($upload['error']) || !is_int($upload['size'])) {
+            throw new RuntimeException('Os dados do arquivo enviado são inválidos.');
+        }
+
+        if ($upload['error'] !== UPLOAD_ERR_OK) {
+            throw new RuntimeException($this->uploadErrorMessage($upload['error']));
+        }
+
+        if (!is_uploaded_file($upload['tmp_name'])) {
+            throw new RuntimeException('O arquivo não foi recebido por uma requisição de upload válida.');
+        }
+
+        $actualSize = filesize($upload['tmp_name']);
+        if ($actualSize === false || $actualSize !== $upload['size']) {
+            throw new RuntimeException('Não foi possível validar o tamanho do arquivo enviado.');
+        }
+
+        if ($actualSize > $maxSize) {
+            throw new RuntimeException('O arquivo excede o tamanho máximo permitido.');
+        }
+
+        $mimeType = (new finfo(FILEINFO_MIME_TYPE))->file($upload['tmp_name']);
+        if (!is_string($mimeType)) {
+            throw new RuntimeException('Não foi possível identificar o tipo do arquivo enviado.');
+        }
+
+        $mimeType = strtolower($mimeType);
+        $allowedTypes = array_map('strtolower', $allowedTypes);
+        if (!in_array($mimeType, $allowedTypes, true)) {
+            throw new RuntimeException('O tipo do arquivo enviado não é permitido.');
+        }
+
+        if ($isImage) {
+            $imageInfo = getimagesize($upload['tmp_name']);
+            if ($imageInfo === false || strtolower($imageInfo['mime'] ?? '') !== $mimeType) {
+                throw new RuntimeException('O conteúdo enviado não é uma imagem válida.');
+            }
+        }
+
+        $directory = rtrim($this->destinationDirectory, '/\\');
+        if ($directory === '') {
+            $directory = DIRECTORY_SEPARATOR;
+        }
+
+        if (!is_dir($directory) && !mkdir($directory, 0750, true) && !is_dir($directory)) {
+            throw new RuntimeException('Não foi possível criar a pasta de destino do upload.');
+        }
+
+        if (!is_writable($directory)) {
+            throw new RuntimeException('A pasta de destino do upload não permite gravação.');
+        }
+
+        $extension = self::MIME_EXTENSIONS[$mimeType] ?? 'bin';
+        $filename = bin2hex(random_bytes(16)) . '.' . $extension;
+        $destination = $directory . DIRECTORY_SEPARATOR . $filename;
+
+        if (!move_uploaded_file($upload['tmp_name'], $destination)) {
+            throw new RuntimeException('Não foi possível salvar o arquivo enviado.');
+        }
+
         return $filename;
+    }
+
+    private function uploadErrorMessage(int $error): string
+    {
+        return match ($error) {
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'O arquivo excede o limite de tamanho configurado no servidor.',
+            UPLOAD_ERR_PARTIAL => 'O arquivo foi recebido parcialmente.',
+            UPLOAD_ERR_NO_FILE => 'Nenhum arquivo foi enviado.',
+            UPLOAD_ERR_NO_TMP_DIR => 'A pasta temporária de uploads não está disponível no servidor.',
+            UPLOAD_ERR_CANT_WRITE => 'O servidor não conseguiu gravar o arquivo temporário.',
+            UPLOAD_ERR_EXTENSION => 'Uma extensão do PHP impediu o envio do arquivo.',
+            default => 'Ocorreu um erro ao receber o arquivo enviado.',
+        };
     }
 }
